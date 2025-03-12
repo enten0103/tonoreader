@@ -1,0 +1,2 @@
+/home/renren/Work/voidlord/android/app/.cxx/RelWithDebInfo/674b2b2g/arm64-v8a/CMakeFiles/edit_cache.dir
+/home/renren/Work/voidlord/android/app/.cxx/RelWithDebInfo/674b2b2g/arm64-v8a/CMakeFiles/rebuild_cache.dir

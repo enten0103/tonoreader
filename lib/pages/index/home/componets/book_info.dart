@@ -1,17 +1,17 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
-import 'package:voidlord/pages/index/home/module.dart';
-import 'package:voidlord/utils/keep_alive_warpper.dart';
+import 'package:get/get_core/get_core.dart';
+import 'package:get/get_navigation/src/extension_navigation.dart';
+import 'package:voidlord/model/book_info.dart';
+import 'package:voidlord/routes/void_routers.dart';
 
 class BookInfo extends StatelessWidget {
-  const BookInfo({super.key, required this.bookInfoModule});
-
-  final BookInfoModule bookInfoModule;
+  const BookInfo({super.key, required this.bookInfoModel});
+  final BookInfoModel bookInfoModel;
 
   @override
   Widget build(BuildContext context) {
-    return KeepAliveWrapper(
-        child: Column(
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         PhysicalModel(
@@ -19,24 +19,36 @@ class BookInfo extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
             color: Colors.transparent,
             child: SizedBox(
-              width: 110,
-              height: 160,
-              child: ClipRRect(
-                  borderRadius: BorderRadius.circular(8), // 圆角裁剪
-                  child: CachedNetworkImage(
-                    imageUrl: bookInfoModule.coverUrl,
-                    fit: BoxFit.cover,
-                    placeholder: (context, url) => Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                    errorWidget: (context, url, error) => Icon(Icons.error),
-                  )),
-            )),
+                width: 110,
+                height: 160,
+                child: InkWell(
+                  onTap: () {
+                    Get.toNamed(
+                      VoidRouters.bookInfoPage,
+                      arguments: bookInfoModel,
+                    );
+                  },
+                  child: Hero(
+                      tag: bookInfoModel.id,
+                      child: ClipRRect(
+                          borderRadius: BorderRadius.circular(8), // 圆角裁剪
+                          child: CachedNetworkImage(
+                            imageUrl: bookInfoModel.coverUrl,
+                            fadeInDuration: Duration(microseconds: 0),
+                            fadeOutDuration: Duration(microseconds: 0),
+                            fit: BoxFit.cover,
+                            placeholder: (context, url) => Center(
+                              child: CircularProgressIndicator(),
+                            ),
+                            errorWidget: (context, url, error) =>
+                                Icon(Icons.error),
+                          ))),
+                ))),
         const SizedBox(height: 8),
         SizedBox(
-          width: 100, // 保持与图片同宽
+          width: 110,
           child: Text(
-            bookInfoModule.name,
+            bookInfoModel.title,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: const TextStyle(
@@ -45,11 +57,24 @@ class BookInfo extends StatelessWidget {
             ),
           ),
         ),
-        if (bookInfoModule.authorName != null)
+        if (bookInfoModel.subTitle != null)
           SizedBox(
-            width: 100,
+            width: 110,
             child: Text(
-              bookInfoModule.authorName!,
+              bookInfoModel.subTitle!,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.grey[600],
+              ),
+            ),
+          ),
+        if (bookInfoModel.ssubTitle != null)
+          SizedBox(
+            width: 110,
+            child: Text(
+              bookInfoModel.ssubTitle!,
               maxLines: 1,
               overflow: TextOverflow.ellipsis,
               style: TextStyle(
@@ -59,6 +84,6 @@ class BookInfo extends StatelessWidget {
             ),
           ),
       ],
-    ));
+    );
   }
 }

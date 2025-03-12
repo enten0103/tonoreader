@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:voidlord/model/book_block.dart';
 import 'package:voidlord/pages/index/home/componets/book_info.dart';
-import 'package:voidlord/pages/index/home/module.dart';
 
 class ItemBlock extends StatelessWidget {
-  const ItemBlock({super.key, required this.bookBlockModule});
+  const ItemBlock({super.key, required this.bookBlockModel});
 
-  final BookBlockModule bookBlockModule;
+  final BookBlockModel bookBlockModel;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +20,7 @@ class ItemBlock extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                bookBlockModule.title,
+                bookBlockModel.title,
                 style: TextStyle(fontSize: 18),
               ),
               Icon(Icons.arrow_right_alt, size: 24)
@@ -29,10 +29,10 @@ class ItemBlock extends StatelessWidget {
         ),
         SizedBox(height: 10),
         SizedBox(
-          height: 240,
+          height: 250,
           child: PageView.builder(
               controller: PageController(viewportFraction: 0.9),
-              itemCount: (bookBlockModule.books.length / 3).ceil(),
+              itemCount: (bookBlockModel.books.length / 3).ceil(),
               itemBuilder: (_, index) => _buildPage(index)),
         ),
       ],
@@ -42,15 +42,15 @@ class ItemBlock extends StatelessWidget {
   Widget _buildPage(int pageIndex) {
     final start = pageIndex * 3;
     final end = (pageIndex + 1) * 3;
-    final currentBooks = bookBlockModule.books.sublist(
+    final currentBooks = bookBlockModel.books.sublist(
       start,
-      end < bookBlockModule.books.length ? end : bookBlockModule.books.length,
+      end < bookBlockModel.books.length ? end : bookBlockModel.books.length,
     );
 
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: currentBooks.map((book) {
-        return BookInfo(bookInfoModule: book);
+        return BookInfo(bookInfoModel: book);
       }).toList(),
     );
   }

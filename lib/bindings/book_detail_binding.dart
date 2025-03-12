@@ -1,5 +1,5 @@
 import 'package:get/get.dart';
-import 'package:voidlord/pages/book_detail/controller.dart';
+import 'package:voidlord/pages/detail/controller.dart';
 
 class BookDetailBinding implements Bindings {
   @override

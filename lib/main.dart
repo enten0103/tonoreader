@@ -1,21 +1,12 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:voidlord/bindings/default_binding.dart';
 import 'package:voidlord/routes/void_routers.dart';
+import 'package:voidlord/utils/setting.dart';
 
 void main() {
   runApp(const MyApp());
-  if (Platform.isAndroid) {
-    SystemUiOverlayStyle systemUiOverlayStyle = SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent,
-        systemNavigationBarColor:
-            ColorScheme.fromSeed(seedColor: Colors.blue).surface);
-    SystemChrome.setSystemUIOverlayStyle(systemUiOverlayStyle);
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-  }
+  Setting.apply();
 }
 
 class MyApp extends StatelessWidget {
@@ -25,12 +16,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return GetMaterialApp(
         title: 'voidlord',
+        debugShowCheckedModeBanner: false,
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+          textTheme: TextTheme(),
           useMaterial3: true,
         ),
         getPages: VoidRouters.getPages,
         initialBinding: DefaultBing(),
-        initialRoute: VoidRouters.indexPage);
+        initialRoute: VoidRouters.testPage);
   }
 }
