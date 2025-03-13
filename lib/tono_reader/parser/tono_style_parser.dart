@@ -17,125 +17,124 @@ extension TonoStyleParser on TonoParser {
     List<TonoStyleSheetBlock> result = [];
     var stylesheet = csslib.parse(cssContent);
 
-    // 移除 CSS 注释
-    var sanitizedContent = cssContent.replaceAll(
-      RegExp(r'/\*[\s\S]*?\*/', multiLine: true),
-      '',
-    );
+    for (var styleBlock in stylesheet.topLevels) {
+      if (styleBlock is RuleSet) {
+        final selectorPart = styleBlock.selectorGroup?.span?.text ?? '';
 
-    //提取import
-    final importRegex = RegExp(r'''@import\s+["\'](.+?)["\']\s*;''');
-
-    // 提取所有匹配项
-    Iterable<RegExpMatch> matches = importRegex.allMatches(cssContent);
-
-    // 获取文件名列表
-    List<String> fileNames = [];
-    for (final match in matches) {
-      if (match.groupCount >= 1) {
-        fileNames.add(match.group(1)!);
-      }
-    }
-
-    for (var i = 0; i < fileNames.length; i++) {
-      result.addAll(await parseCss(filePath.pathSplicing(fileNames[i]), null));
-    }
-
-    sanitizedContent = sanitizedContent.replaceAll(importRegex, "");
-
-    // 移除 @font-face
-    sanitizedContent =
-        sanitizedContent.replaceAll(RegExp(r'@font-face\s*\{\s*\}'), "");
-
-    // 移除 @media 规则块
-    while (sanitizedContent.contains("@media")) {
-      var deep = 0;
-      var index = sanitizedContent.indexOf("@media");
-      do {
-        index = sanitizedContent.indexOf(RegExp("{|}"), index + 1);
-        var quot = sanitizedContent[index];
-        if (quot == "{") {
-          deep++;
-        } else {
-          deep--;
+        if (selectorPart.isEmpty || selectorPart.contains("type*=\"check\"")) {
+          continue;
         }
-      } while (deep != 0);
-      sanitizedContent = sanitizedContent.replaceRange(
-          sanitizedContent.indexOf("@media"), index + 1, "");
-    }
 
-    // 匹配 CSS 规则块
-    final rulePattern = RegExp(
-      r'\s*([^{]+)\s*\{\s*([^}]+?)\s*\}\s*',
-      multiLine: true,
-    );
+        // 解析 CSS 属性
+        final properties = <String, String>{};
+        final declarations = styleBlock.declarationGroup;
 
-    for (final match in rulePattern.allMatches(sanitizedContent)) {
-      final selectorPart = match.group(1)?.trim() ?? '';
-      final propertiesPart = match.group(2)?.trim() ?? '';
-      if (selectorPart.isEmpty || propertiesPart.isEmpty) continue;
+        for (final declaration in declarations.declarations) {
+          if (declaration is! Declaration) continue; // 跳过无效声明
 
-      // 解析 CSS 属性
-      final properties = <String, String>{};
-      final declarations = propertiesPart.split(';').map((d) => d.trim()).where(
-            (d) => d.isNotEmpty,
-          );
-
-      for (final declaration in declarations) {
-        final colonIndex = declaration.indexOf(':');
-        if (colonIndex == -1) continue; // 跳过无效声明
-
-        final property = declaration.substring(0, colonIndex).trim();
-        final value = declaration.substring(colonIndex + 1).trim();
-
-        // 处理 margin 缩略声明
-        if (property == 'margin') {
-          final values = value.split(RegExp(r'\s+')); // 按空格分割值
-          final length = values.length;
-
-          String top, right, bottom, left;
-
-          // 根据值的数量拆分 margin
-          if (length == 1) {
-            // 1个值：所有边都使用该值
-            top = right = bottom = left = values[0];
-          } else if (length == 2) {
-            // 2个值：上下用第一个值，左右用第二个值
-            top = bottom = values[0];
-            right = left = values[1];
-          } else if (length == 3) {
-            // 3个值：上用第一个值，左右用第二个值，下用第三个值
-            top = values[0];
-            right = left = values[1];
-            bottom = values[2];
-          } else if (length == 4) {
-            // 4个值：分别对应上、右、下、左
-            top = values[0];
-            right = values[1];
-            bottom = values[2];
-            left = values[3];
+          final property = declaration.property;
+          final value = declaration.span.text
+              .replaceAll(property, "")
+              .replaceAll(":", "");
+          // 处理 margin 缩略声明
+          if (property == 'margin') {
+            properties.addAll(marginSegmentation(value));
+          } else if (property == "border-width") {
+            properties.addAll(borderWidthSegmentation(value));
           } else {
-            continue; // 无效的 margin 值，跳过处理
+            properties[property] = value;
           }
-
-          // 将拆分后的值存入 properties
-          properties['margin-top'] = top;
-          properties['margin-right'] = right;
-          properties['margin-bottom'] = bottom;
-          properties['margin-left'] = left;
-        } else if (property == "border") {
-        } else {
-          // 非 margin 属性，直接存储
-          properties[property] = value;
         }
+        var selector = parseSelector(selectorPart);
+        var styleSheetBlock =
+            TonoStyleSheetBlock(selector: selector, properties: properties);
+        result.add(styleSheetBlock);
       }
-
-      var selector = parseSelector(selectorPart);
-      var styleSheetBlock =
-          TonoStyleSheetBlock(selector: selector, properties: properties);
-      result.add(styleSheetBlock);
+      if (styleBlock is ImportDirective) {
+        result.addAll(
+            await parseCss(filePath.pathSplicing(styleBlock.import), null));
+      }
     }
 
     return result;
+  }
+
+  Map<String, String> borderWidthSegmentation(String value) {
+    while (value.startsWith(" ")) {
+      value = value.substring(1, value.length);
+    }
+    final values = value.split(RegExp(r'\s+')); // 按空格分割值
+    final length = values.length;
+    Map<String, String> properties = {};
+    String top, right, bottom, left;
+
+    // 根据值的数量拆分 margin
+    if (length == 1) {
+      // 1个值：所有边都使用该值
+      top = right = bottom = left = values[0];
+    } else if (length == 2) {
+      // 2个值：上下用第一个值，左右用第二个值
+      top = bottom = values[0];
+      right = left = values[1];
+    } else if (length == 3) {
+      // 3个值：上用第一个值，左右用第二个值，下用第三个值
+      top = values[0];
+      right = left = values[1];
+      bottom = values[2];
+    } else if (length == 4) {
+      // 4个值：分别对应上、右、下、左
+      top = values[0];
+      right = values[1];
+      bottom = values[2];
+      left = values[3];
+    } else {
+      return properties;
+    }
+
+    // 将拆分后的值存入 properties
+    properties['border-width-top'] = top;
+    properties['border-width-right'] = right;
+    properties['border-width-bottom'] = bottom;
+    properties['border-width-left'] = left;
+    return properties;
+  }
+
+  Map<String, String> marginSegmentation(String value) {
+    while (value.startsWith(" ")) {
+      value = value.substring(1, value.length);
+    }
+
+    final values = value.split(RegExp(r'\s+')); // 按空格分割值
+    final length = values.length;
+    Map<String, String> properties = {};
+    String top, right, bottom, left;
+    // 根据值的数量拆分 margin
+    if (length == 1) {
+      // 1个值：所有边都使用该值
+      top = right = bottom = left = values[0];
+    } else if (length == 2) {
+      // 2个值：上下用第一个值，左右用第二个值
+      top = bottom = values[0];
+      right = left = values[1];
+    } else if (length == 3) {
+      // 3个值：上用第一个值，左右用第二个值，下用第三个值
+      top = values[0];
+      right = left = values[1];
+      bottom = values[2];
+    } else if (length == 4) {
+      // 4个值：分别对应上、右、下、左
+      top = values[0];
+      right = values[1];
+      bottom = values[2];
+      left = values[3];
+    } else {
+      return properties;
+    }
+    // 将拆分后的值存入 properties
+    properties['margin-top'] = top;
+    properties['margin-right'] = right;
+    properties['margin-bottom'] = bottom;
+    properties['margin-left'] = left;
+    return properties;
   }
 }

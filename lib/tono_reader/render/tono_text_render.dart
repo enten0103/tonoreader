@@ -32,6 +32,7 @@ extension TextRender on TonoRender {
     TextStyle ts = TextStyle(
       shadows: shadow == null ? [] : [shadow],
       fontSize: fontSize * config.fontSize,
+      fontFamily: fontFamily.length == 1 ? fontFamily[0] : null,
       fontFamilyFallback: fontFamily,
       height: lineHeight * config.lineSpacing,
       color: textColor,
@@ -50,7 +51,7 @@ extension TextRender on TonoRender {
                   width: borderWidth ?? 0,
                   color: borderColor ?? Color.fromARGB(0, 0, 0, 0)),
             ),
-            child: lineHeight == 0
+            child: lineHeight == 0 || tonoText.texts.isEmpty
                 ? null
                 : Text.rich(
                     TextSpan(children: [
@@ -79,7 +80,6 @@ extension TextRender on TonoRender {
     var backgroundColor = parseBackgroundColor(css['background-color']);
     var margin = parseMarginAll(css, fontSize);
     var padding = parsePaddingAll(css, fontSize);
-
     return WidgetSpan(
         baseline: TextBaseline.alphabetic,
         alignment: PlaceholderAlignment.baseline,

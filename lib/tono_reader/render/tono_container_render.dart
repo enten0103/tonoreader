@@ -54,7 +54,6 @@ extension TonoContainerRender on TonoRender {
     } else {
       border = borderAll;
     }
-    print(css);
     var transform = css['transform'];
     var transformOrigin = css['transform-origin'];
     CrossAxisAlignment genCrossAlignment() {

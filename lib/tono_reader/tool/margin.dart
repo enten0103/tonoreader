@@ -39,6 +39,17 @@ class RenderMargin extends RenderBox
   }
 
   @override
+  double? computeDistanceToActualBaseline(TextBaseline baseline) {
+    if (child == null) return null;
+
+    final childDistance = child!.getDistanceToActualBaseline(baseline);
+    if (childDistance == null) return null;
+
+    // 计算时要考虑垂直方向的偏移
+    return childDistance + _edgeInsets.top;
+  }
+
+  @override
   void performLayout() {
     if (child == null) {
       size = constraints.smallest; // 无子组件时尺寸为最小

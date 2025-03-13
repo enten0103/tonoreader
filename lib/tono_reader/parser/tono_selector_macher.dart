@@ -37,7 +37,7 @@ extension TonoSelectorMacher on TonoParser {
             priority = 1000;
           }
           if (ist.property == "font-family") {
-            priority = ist.priority;
+            priority = -1000;
           }
           result.add(TonoStyle(
               priority: priority, value: ist.value, property: ist.property));

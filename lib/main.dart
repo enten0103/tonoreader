@@ -24,6 +24,6 @@ class MyApp extends StatelessWidget {
         ),
         getPages: VoidRouters.getPages,
         initialBinding: DefaultBing(),
-        initialRoute: VoidRouters.testPage);
+        initialRoute: VoidRouters.indexPage);
   }
 }
