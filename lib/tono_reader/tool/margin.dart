@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:get/instance_manager.dart';
+import 'package:voidlord/tono_reader/model/widget/tono_container.dart';
+import 'package:voidlord/tono_reader/render/state/tono_container_state.dart';
+import 'package:voidlord/tono_reader/tool/css_tool.dart';
 
 // Margin 组件
 class Margin extends SingleChildRenderObjectWidget {
@@ -109,6 +113,27 @@ class AdaptiveMargin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    var containerState = Get.find<TonoContainerState>();
+    var container = containerState.container;
+    var parent = container.parent;
+    var mt = margin.top;
+    if (parent != null) {
+      double? cmb = parent.extra['child-margin-bottom'];
+      //   double? cmr = parent.extra['child-margin-right'];
+      if (parent.className == "tr" ||
+          (parent is TonoContainer &&
+              parent.css.toMap()['display'] == "flex")) {
+        ///横向
+      } else {
+        ///纵向
+        if (cmb != null) {
+          if (cmb > margin.top) {
+            mt = cmb;
+          }
+        }
+      }
+      parent.extra['child-margin-bottom'] = margin.bottom;
+    }
     // 检查是否有负 margin
     bool hasNegativeMargin = margin.top < 0 ||
         margin.bottom < 0 ||
@@ -118,7 +143,13 @@ class AdaptiveMargin extends StatelessWidget {
       return Margin(margin: margin, child: child);
     } else {
       // 使用默认的 Padding 组件
-      return Padding(padding: margin, child: child);
+      return Container(
+          margin: EdgeInsets.only(
+              left: margin.left,
+              right: margin.right,
+              bottom: container.extra['last'] == true ? margin.bottom : 0,
+              top: mt),
+          child: child);
     }
   }
 }

@@ -4,14 +4,14 @@ import 'package:voidlord/tono_reader/model/widget/tono_widget.dart';
 import 'package:voidlord/tono_reader/widget_provider/tono_widget_provider.dart';
 
 class LocalTonoWidgetProvider extends TonoWidgetProvider {
-  final Map<String, List<TonoWidget>> widgets;
+  final Map<String, TonoWidget> widgets;
   final Map<String, Uint8List> assets;
   LocalTonoWidgetProvider({
     required this.widgets,
     required this.assets,
   });
   @override
-  Future<List<TonoWidget>> getWidgetsById(String id) async {
+  Future<TonoWidget> getWidgetsById(String id) async {
     var result = widgets[id];
     if (result == null) {
       throw Exception("cannot find widgets by id:$id");

@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:voidlord/tono_reader/config.dart';
 import 'package:voidlord/tono_reader/model/base/tono.dart';
-import 'package:voidlord/tono_reader/model/base/tono_book_info.dart';
 import 'package:voidlord/tono_reader/model/base/tono_type.dart';
+import 'package:voidlord/tono_reader/model/widget/tono_container.dart';
 import 'package:voidlord/tono_reader/parser/tono_parser.dart';
-import 'package:voidlord/tono_reader/render/tono_font_loader.dart';
-import 'package:voidlord/tono_reader/render/tono_render.dart';
+import 'package:voidlord/tono_reader/render/widget/tono_container_widget.dart';
+import 'package:voidlord/tono_reader/state/tono_data_provider.dart';
+import 'package:voidlord/tono_reader/state/tono_flager.dart';
+import 'package:voidlord/tono_reader/state/tono_initializer.dart';
+import 'package:voidlord/tono_reader/state/tono_progresser.dart';
+import 'package:voidlord/tono_reader/tool/nav_darwer.dart';
 import 'package:voidlord/utils/type.dart';
 
 class TonoReaderController extends GetxController {
@@ -15,129 +18,60 @@ class TonoReaderController extends GetxController {
     required this.tonoType,
   });
 
-  RxBool isStateVisible = true.obs; // 控制工具栏的显示状态
-  var state = LoadingState.loading.obs;
-
-  var scaffoldKey = GlobalKey<ScaffoldState>();
-
-  Tono? tono;
-
-  TonoRender? render;
-
-  List<TonoNavItem> navList = [];
-
-  var current = 0.obs;
-
-  List<Widget> currentWidgets = [];
-
-  changeChapter(String id) async {
-    state.value = LoadingState.loading;
-    var c = await render!.rendeById(id);
-    currentWidgets.clear();
-    currentWidgets.addAll(c);
-    state.value = LoadingState.success;
-  }
-
-  ///初始化部分
-
   final String filePath;
   final TonoType tonoType;
+  Widget currentWidget = Text("loading");
+
+  late TonoFlager tonoFlager = Get.find<TonoFlager>();
+  late TonoProgresser tonoProgresser = Get.find<TonoProgresser>();
+  late TonoProvider tonoDataProvider = Get.find<TonoProvider>();
+
+  void changeChapter(String id) async {
+    tonoFlager.state.value = LoadingState.loading;
+    currentWidget = TonoContainerWidget(
+      tonoContainer: await tonoDataProvider.getWidgetById(id) as TonoContainer,
+    );
+    tonoProgresser.xhtmlIndex = tonoDataProvider.xhtmls.indexOf(id);
+    tonoFlager.state.value = LoadingState.success;
+  }
+
+  void siblingChapter(TapDownDetails details) async {
+    tonoFlager.state.value = LoadingState.loading;
+    try {
+      if (details.localPosition.dx > Get.mediaQuery.size.width / 2) {
+        var key = tonoDataProvider.xhtmls[tonoProgresser.xhtmlIndex + 1];
+        currentWidget = TonoContainerWidget(
+          tonoContainer:
+              await tonoDataProvider.getWidgetById(key) as TonoContainer,
+        );
+        tonoProgresser.xhtmlIndex++;
+      } else {
+        var key = tonoDataProvider.xhtmls[tonoProgresser.xhtmlIndex - 1];
+        currentWidget = TonoContainerWidget(
+          tonoContainer:
+              await tonoDataProvider.getWidgetById(key) as TonoContainer,
+        );
+        tonoProgresser.xhtmlIndex--;
+      }
+    } catch (_) {}
+    tonoFlager.state.value = LoadingState.success;
+  }
 
   void onBodyClick() {
-    isStateVisible.toggle();
+    tonoFlager.isStateVisible.toggle();
   }
 
-  void openNavDrawer() async {
-    showModalBottomSheet(
-        context: Get.context!,
-        builder: (ctx) {
-          return BottomSheet(
-              onClosing: () {},
-              builder: (ctx) {
-                return Padding(
-                    padding: EdgeInsets.all(20),
-                    child: SizedBox(
-                      height: Get.mediaQuery.size.height / 2,
-                      child: Column(
-                        children: [
-                          Row(
-                            children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.dataset,
-                                    size: 30,
-                                  ),
-                                  SizedBox(
-                                    width: 10,
-                                  ),
-                                  Text(
-                                    "章节",
-                                    style: TextStyle(fontSize: 20),
-                                  )
-                                ],
-                              ),
-                              Row(
-                                children: [],
-                              )
-                            ],
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                          Expanded(
-                            child: ListView.builder(
-                                itemCount: navList.length,
-                                itemBuilder: (ctx, index) {
-                                  return Row(
-                                    children: [
-                                      Expanded(
-                                          child: TextButton(
-                                        style: TextButton.styleFrom(
-                                            alignment: Alignment.centerLeft,
-                                            padding: EdgeInsets.only(left: 20)),
-                                        child: Text(
-                                          navList[index].title,
-                                          style: TextStyle(color: Colors.black),
-                                          maxLines: 1,
-                                        ),
-                                        onPressed: () {
-                                          changeChapter(navList[index].path);
-                                        },
-                                      )),
-                                      SizedBox(
-                                        width: 20,
-                                      )
-                                    ],
-                                  );
-                                }),
-                          ),
-                          SizedBox(
-                            height: 20,
-                          ),
-                        ],
-                      ),
-                    ));
-              });
-        });
-  }
-
-  void loadConfig() async {
-    Get.put(TonoReaderConfig());
+  void openNavDrawer() {
+    NavDarwer.openNavDrawer();
   }
 
   Future init() async {
     await Future.delayed(Duration(milliseconds: 500));
-    loadConfig();
     if (tonoType == TonoType.local) {
-      tono = await _initFromDisk();
-      render = tono!.genRender();
-      render?.loadFont();
-      navList.addAll(tono!.navItems);
-      var c = await render!.rendeById(navList[current.value].path);
-      currentWidgets.clear();
-      currentWidgets.addAll(c);
-      state.value = LoadingState.success;
+      var tono = await _initFromDisk();
+      await TonoInitializer.init(tono);
+      changeChapter(tono.navItems[0].path);
+      tonoFlager.state.value = LoadingState.success;
     }
     if (tonoType == TonoType.net) {
       _initFromNet();
@@ -146,9 +80,9 @@ class TonoReaderController extends GetxController {
   }
 
   @override
-  void onReady() {
+  void onInit() {
     init();
-    super.onReady();
+    super.onInit();
   }
 
   Future<Tono> _initFromDisk() async {

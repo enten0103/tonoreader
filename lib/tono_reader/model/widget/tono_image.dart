@@ -5,9 +5,7 @@ class TonoImage extends TonoWidget {
   TonoImage({
     required this.url,
     required this.css,
-    required this.contentCss,
   });
   final String url;
-  final List<TonoStyle> contentCss;
   final List<TonoStyle> css;
 }

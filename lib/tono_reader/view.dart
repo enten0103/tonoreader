@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:voidlord/tono_reader/controller.dart';
 import 'package:voidlord/tono_reader/model/base/tono_type.dart';
+import 'package:voidlord/tono_reader/state/tono_data_provider.dart';
+import 'package:voidlord/tono_reader/state/tono_flager.dart';
 import 'package:voidlord/tono_reader/ui/default/bottom_bar_view.dart';
 import 'package:voidlord/tono_reader/ui/default/content_view.dart';
 import 'package:voidlord/tono_reader/ui/default/top_bar_view.dart';
@@ -20,21 +22,27 @@ class TonoReader extends StatelessWidget {
   Widget build(BuildContext context) {
     var controller =
         Get.put(TonoReaderController(filePath: filePath, tonoType: tonoType));
+    var flager = Get.put(TonoFlager());
+
+    var dataProvoder = Get.put(TonoProvider());
     return Obx(() => Scaffold(
-          key: controller.scaffoldKey,
+          key: flager.scaffoldKey,
           body: Stack(
             children: [
               // 阅读内容，固定大小
               Positioned.fill(
                   child: AnimatedSwitcher(
                       duration: Duration(milliseconds: 500),
-                      child: switch (controller.state.value) {
+                      child: switch (flager.state.value) {
                         LoadingState.loading => _buildLoading(),
                         LoadingState.failed => _buildFailed(),
                         LoadingState.success => ContentView(
-                            widgets: controller.currentWidgets,
+                            widget: controller.currentWidget,
                             onTap: () {
                               controller.onBodyClick();
+                            },
+                            onDoubleTap: (detail) {
+                              controller.siblingChapter(detail);
                             },
                           )
                       })),
@@ -44,13 +52,12 @@ class TonoReader extends StatelessWidget {
                 right: 0,
                 top: 0,
                 child: AnimatedSlide(
-                    offset: controller.isStateVisible.value
+                    offset: flager.isStateVisible.value
                         ? Offset(0, 0)
                         : Offset(0, -1), // 从顶部滑出
                     duration: Duration(milliseconds: 300),
                     curve: Curves.easeInOut,
-                    child: TopBarView(
-                        bookTitle: controller.tono?.bookInfo.title ?? "")),
+                    child: TopBarView(bookTitle: dataProvoder.title)),
               ),
               // 底部操作栏的滑动动画
               Positioned(
@@ -58,7 +65,7 @@ class TonoReader extends StatelessWidget {
                 right: 0,
                 bottom: 0,
                 child: AnimatedSlide(
-                  offset: controller.isStateVisible.value
+                  offset: flager.isStateVisible.value
                       ? Offset(0, 0)
                       : Offset(0, 1), // 从底部滑出
                   duration: Duration(milliseconds: 300),

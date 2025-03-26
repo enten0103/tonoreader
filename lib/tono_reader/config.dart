@@ -14,7 +14,7 @@ class TonoReaderConfig {
   double wordSpacing = 1;
 
   ///字体大小
-  double fontSize = 1;
+  double fontSize = 18;
 
   ///行间距
   double lineSpacing = 1;

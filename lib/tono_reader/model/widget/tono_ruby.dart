@@ -1,5 +1,4 @@
-import 'package:voidlord/tono_reader/model/style/tono_style.dart';
-import 'package:voidlord/tono_reader/model/widget/tono_widget.dart';
+import 'package:voidlord/tono_reader/model/widget/tono_container.dart';
 
 class RubyItem {
   RubyItem({
@@ -10,11 +9,11 @@ class RubyItem {
   final String? ruby;
 }
 
-class TonoRuby extends TonoWidget {
+class TonoRuby extends TonoContainer {
   TonoRuby({
+    super.className,
+    required super.css,
     required this.texts,
-    required this.css,
-  });
+  }) : super(display: "block");
   final List<RubyItem> texts;
-  final List<TonoStyle> css;
 }

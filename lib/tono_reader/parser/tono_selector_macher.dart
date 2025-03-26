@@ -4,18 +4,84 @@ import 'package:voidlord/tono_reader/model/parser/tono_selector_part.dart';
 import 'package:voidlord/tono_reader/model/parser/tono_style_sheet_block.dart';
 import 'package:voidlord/tono_reader/model/style/tono_style.dart';
 import 'package:voidlord/tono_reader/parser/tono_parser.dart';
+import 'package:voidlord/tono_reader/parser/tono_style_parser.dart';
 
 extension TonoSelectorMacher on TonoParser {
   List<TonoStyle> genInlineStyle(dom.Element element) {
     var style = element.attributes['style'];
-    if (style == null) return [];
-    var splitedStyle = style.split(';');
     List<TonoStyle> result = [];
+    if (element.localName == "hr") {
+      result.add(TonoStyle(
+          priority: -100, value: "1px", property: "border-top-width"));
+      result.add(
+          TonoStyle(priority: -100, value: "0.5em", property: "margin-top"));
+      result.add(
+          TonoStyle(priority: -100, value: "0.5em", property: "margin-bottom"));
+    }
+    if (style == null) return result;
+    var splitedStyle = style.split(';');
     for (var i = 0; i < splitedStyle.length - 1; i++) {
       var rule = splitedStyle[i].split(":");
+      var property = rule[0];
+      var value = rule[1];
+      if (property == 'margin') {
+        var margins = marginSegmentation(value);
+        for (var key in margins.keys) {
+          result.add(TonoStyle(
+              priority: 10000000000, value: margins[key]!, property: key));
+        }
+      } else if (property == 'padding') {
+        var paddings = paddingSegmentation(value);
+        for (var key in paddings.keys) {
+          result.add(TonoStyle(
+              priority: 10000000000, value: paddings[key]!, property: key));
+        }
+      } else if (property == "border-width") {
+        var borderWidths = borderWidthSegmentation(value);
+        for (var key in borderWidths.keys) {
+          result.add(TonoStyle(
+              priority: 10000000000, value: borderWidths[key]!, property: key));
+        }
+      } else if (property == "border") {
+        var borders = borderDirectionSegmentation(
+            value, ["left", "right", "top", "bottom"]);
+        for (var key in borders.keys) {
+          result.add(TonoStyle(
+              priority: 10000000000, value: borders[key]!, property: key));
+        }
+      } else if (property == "border-left") {
+        var borders = borderDirectionSegmentation(value, ["left"]);
+        for (var key in borders.keys) {
+          result.add(TonoStyle(
+              priority: 10000000000, value: borders[key]!, property: key));
+        }
+      } else if (property == "border-right") {
+        var borders = borderDirectionSegmentation(value, ["right"]);
+        for (var key in borders.keys) {
+          result.add(TonoStyle(
+              priority: 10000000000, value: borders[key]!, property: key));
+        }
+      } else if (property == "border-top") {
+        var borders = borderDirectionSegmentation(value, ["top"]);
+        for (var key in borders.keys) {
+          result.add(TonoStyle(
+              priority: 10000000000, value: borders[key]!, property: key));
+        }
+      } else if (property == "border-bottom") {
+        var borders = borderDirectionSegmentation(value, ["bottom"]);
+        for (var key in borders.keys) {
+          result.add(TonoStyle(
+              priority: 10000000000, value: borders[key]!, property: key));
+        }
+      } else {
+        result.add(
+            TonoStyle(priority: 10000000000, value: value, property: property));
+      }
+
       result.add(
           TonoStyle(priority: 10000000000, value: rule[1], property: rule[0]));
     }
+
     return result;
   }
 
@@ -70,19 +136,85 @@ extension TonoSelectorMacher on TonoParser {
               return e.property == k;
             });
             if (p.isNotEmpty) {
-              if (v.contains("important") ||
-                  p.first.priority <= group.specificity) {
-                result.remove(p.first);
-                result.add(TonoStyle(
-                  priority: group.specificity,
-                  value: v,
-                  property: k,
-                ));
+              ///字号继承 复杂
+              if (k == 'font-size') {
+                v = v.replaceAll("!important", "");
+                if (v.endsWith("em") && p.first.value.endsWith("em")) {
+                  /// em -> em
+                  var newFontSize = double.parse(v.replaceAll("em", ""));
+                  var oldFontSize =
+                      double.parse(p.first.value.replaceAll("em", ""));
+                  result.remove(p.first);
+                  result.add(TonoStyle(
+                    priority: group.specificity,
+                    value: "${newFontSize * oldFontSize}em",
+                    property: k,
+                  ));
+                } else if (v.endsWith("px")) {
+                  ///x -> px
+                  result.remove(p.first);
+                  result.add(TonoStyle(
+                    priority: group.specificity,
+                    value: v,
+                    property: k,
+                  ));
+                } else if (v.endsWith("em") && p.first.value.endsWith("px")) {
+                  /// px -> em
+                  var newFontSize = double.parse(v.replaceAll("em", ""));
+                  var oldFontSize =
+                      double.parse(p.first.value.replaceAll("px", ""));
+                  result.remove(p.first);
+                  result.add(TonoStyle(
+                    priority: group.specificity,
+                    value: "${newFontSize * oldFontSize}px",
+                    property: k,
+                  ));
+                } else if (v.endsWith("%")) {
+                  if (p.first.value.endsWith("px")) {
+                    var newFontSize = double.parse(v.replaceAll("%", "")) / 100;
+                    var oldFontSize =
+                        double.parse(p.first.value.replaceAll("px", ""));
+                    result.remove(p.first);
+                    result.add(TonoStyle(
+                      priority: group.specificity,
+                      value: "${newFontSize * oldFontSize}px",
+                      property: k,
+                    ));
+                  }
+                  if (p.first.value.endsWith("em")) {
+                    var newFontSize = double.parse(v.replaceAll("%", "")) / 100;
+                    var oldFontSize =
+                        double.parse(p.first.value.replaceAll("em", ""));
+                    result.remove(p.first);
+                    result.add(TonoStyle(
+                      priority: group.specificity,
+                      value: "${newFontSize * oldFontSize}em",
+                      property: k,
+                    ));
+                  }
+                }
+              } else {
+                var specificity = v.contains("!important")
+                    ? 1000000000000000000
+                    : group.specificity;
+                v = v.trim();
+                if (p.first.priority <= group.specificity) {
+                  result.remove(p.first);
+                  result.add(TonoStyle(
+                    priority: specificity,
+                    value: v.replaceAll("!important", "").trim(),
+                    property: k,
+                  ));
+                }
               }
             } else {
+              var specificity = v.contains("!important")
+                  ? 1000000000000000000
+                  : group.specificity;
+
               result.add(TonoStyle(
-                priority: group.specificity,
-                value: v,
+                priority: specificity,
+                value: v.replaceAll("!important", "").trim(),
                 property: k,
               ));
             }
