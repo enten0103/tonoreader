@@ -8,4 +8,6 @@ class TonoProgresser extends GetxController {
   int xhtmlIndex = 0;
 
   int pageIndex = 0;
+
+  List<int> pageSequence = [];
 }

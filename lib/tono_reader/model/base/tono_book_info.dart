@@ -6,6 +6,19 @@ class TonoBookInfo {
 
   final String title;
   final String coverUrl;
+  Map<String, dynamic> toMap() {
+    return {
+      'title': title,
+      'coverUrl': coverUrl,
+    };
+  }
+
+  static TonoBookInfo fromMap(Map<String, dynamic> map) {
+    return TonoBookInfo(
+      title: map['title'] as String,
+      coverUrl: map['coverUrl'] as String,
+    );
+  }
 }
 
 class TonoNavItem {
@@ -15,4 +28,17 @@ class TonoNavItem {
   });
   final String path;
   final String title;
+  Map<String, dynamic> toMap() {
+    return {
+      'path': path,
+      'title': title,
+    };
+  }
+
+  static TonoNavItem fromMap(Map<String, dynamic> map) {
+    return TonoNavItem(
+      path: map['path'] as String,
+      title: map['title'] as String,
+    );
+  }
 }

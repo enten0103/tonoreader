@@ -20,11 +20,18 @@ extension TonoCssBorderBgc on Map<String, String> {
     var assetsProvider = Get.find<TonoAssetsProvider>();
     var bgi = _parseBackgroundImage();
     var color = _parseBackgroundColor();
+    var boxshadow = _parseBoxShadow(em);
     return TonoBoxDecoration(
-      color: color,
+      color: color ?? (boxshadow != null ? Colors.white : null),
       borderRadius: _parseBorderRadius(em),
       border: _parseBorder(em),
-      image: color == null && bgi != null
+      boxShadow: boxshadow != null
+          ? [
+              BoxShadow(
+                  offset: Offset(1, 1), blurRadius: 1, color: Colors.black)
+            ]
+          : [],
+      image: bgi != null
           ? TonoDecorationImage(
               alignment: _parseBackgorundPosition() ?? Alignment.center,
               repeat: _parseBackgroundRepet(),
@@ -35,6 +42,21 @@ extension TonoCssBorderBgc on Map<String, String> {
               ))
           : null,
     );
+  }
+
+  BoxShadow? _parseBoxShadow(double em) {
+    var cssBoxShadow = this['box-shadow'];
+    if (cssBoxShadow == null) return null;
+    cssBoxShadow = cssBoxShadow.replaceAll("!important", "").trim();
+    var values = cssBoxShadow.split(" ");
+    if (values.length == 4) {
+      return BoxShadow(
+          offset:
+              Offset(parseUnit(values[0], 0, em), parseUnit(values[1], 0, em)),
+          blurRadius: parseUnit(values[2], 0, em),
+          color: parseColor(values[3]) ?? Colors.black);
+    }
+    return null;
   }
 
   BackgroundSize? _parseBackgroundSize(double em) {

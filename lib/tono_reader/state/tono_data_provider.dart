@@ -8,13 +8,18 @@ class TonoProvider extends GetxController {
   String fontPrefix = "";
   String title = "";
   List<TonoNavItem> navList = [];
+  List<TonoWidget> widgets = [];
   List<String> xhtmls = [];
-  void init(Tono tono) {
+  Future init(Tono tono) async {
     this.tono = tono;
-    fontPrefix = tono.fontPrefix;
+    fontPrefix = tono.hash;
     title = tono.bookInfo.title;
     navList.addAll(List.from(tono.navItems));
     xhtmls.addAll(List.from(tono.xhtmls));
+    for (var i = 0; i < xhtmls.length; i++) {
+      var id = xhtmls[i];
+      widgets.add(await getWidgetById(id));
+    }
   }
 
   Future<TonoWidget> getWidgetById(String id) async {

@@ -7,5 +7,20 @@ class TonoImage extends TonoWidget {
     required this.css,
   });
   final String url;
+
   final List<TonoStyle> css;
+  static TonoImage fromMap(Map<String, dynamic> map) {
+    return TonoImage(
+        url: map['url'] as String,
+        css: (map['css'] as List).map((e) => TonoStyle.formMap(e)).toList());
+  }
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      "_type": "tonoImage",
+      'url': url,
+      "css": css.map((item) => item.toMap()).toList(),
+    };
+  }
 }

@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:ruby_text/ruby_text.dart';
 import 'package:voidlord/tono_reader/config.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_ruby.dart';
+import 'package:voidlord/tono_reader/render/state/tono_container_state.dart';
 import 'package:voidlord/tono_reader/render/tono_css/tono_css_margin.dart';
 import 'package:voidlord/tono_reader/render/tono_css/tono_css_size_padding.dart';
 import 'package:voidlord/tono_reader/state/tono_data_provider.dart';
@@ -14,6 +15,7 @@ class TonoRubyWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var config = Get.find<TonoReaderConfig>();
+    Get.find<TonoContainerState>().container = tonoRuby;
     var css = tonoRuby.css.toMap();
     var fontSize = tonoRuby.css.getFontSize();
     var fontFamily = paserFontFamily(css['font-family']);

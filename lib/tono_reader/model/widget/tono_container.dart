@@ -17,4 +17,32 @@ class TonoContainer extends TonoWidget {
 
   ///子元素
   List<TonoWidget>? children;
+
+  static TonoContainer fromMap(Map<String, dynamic> css) {
+    return TonoContainer(
+        className: css['className'] as String?,
+        display: css['display'] as String,
+        css: (css['css'] as List).map((e) => TonoStyle.formMap(e)).toList(),
+        children: (css['children'] as List?)
+            ?.map((e) => TonoWidget.fromMap(e))
+            .toList());
+  }
+
+  @override
+  Map<String, dynamic> toMap() {
+    return children == null
+        ? {
+            "_type": "tonoContainer",
+            "className": className,
+            "css": css.map((item) => item.toMap()).toList(),
+            "display": display,
+          }
+        : {
+            "_type": "tonoContainer",
+            "className": className,
+            "css": css.map((item) => item.toMap()).toList(),
+            "display": display,
+            "children": children!.map((item) => item.toMap()).toList(),
+          };
+  }
 }

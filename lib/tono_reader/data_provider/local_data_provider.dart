@@ -11,10 +11,23 @@ class LocalDataProvider extends TonoDataProvider {
     required this.root,
   });
   final String root;
+
   final Map<String, Uint8List> _fileMap = {};
+  late String _hash;
   Future init() async {
+    _hash = await getFileHash(root);
     await loadFile(root);
   }
+
+  Future<String> getFileHash(String filePath) async {
+    final file = File(filePath);
+    final fileBytes = file.readAsBytesSync().buffer.asUint8List();
+    final hash = md5.convert(fileBytes.buffer.asUint8List()).toString();
+    return hash;
+  }
+
+  @override
+  String get hash => _hash;
 
   @override
   Future<String> getOpf() async {

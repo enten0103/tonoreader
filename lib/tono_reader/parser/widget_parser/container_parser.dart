@@ -40,7 +40,11 @@ extension ContainerParser on TonoParser {
           continue;
         }
         if (element.localName == "br") {
-          children.add(TonoText(text: "\n", css: theInheritStyle));
+          if (element.parent?.children.length == 1) {
+            children.add(TonoText(text: " ", css: theInheritStyle));
+          } else {
+            children.add(TonoText(text: "\n", css: theInheritStyle));
+          }
         } else if (element.localName == "img") {
           children.add(
               toImg(element, currentPath, css, inheritStyles: inheritStyles));

@@ -127,7 +127,9 @@ class AdaptiveMargin extends StatelessWidget {
       } else {
         ///纵向
         if (cmb != null) {
-          if (cmb > margin.top) {
+          if (cmb > 0 && margin.top < 0) {
+            mt = cmb + margin.top;
+          } else if (cmb > margin.top) {
             mt = cmb;
           }
         }
@@ -135,15 +137,15 @@ class AdaptiveMargin extends StatelessWidget {
       parent.extra['child-margin-bottom'] = margin.bottom;
     }
     // 检查是否有负 margin
-    bool hasNegativeMargin = margin.top < 0 ||
-        margin.bottom < 0 ||
-        margin.left < 0 ||
-        margin.right < 0;
+    bool hasNegativeMargin =
+        mt < 0 || margin.bottom < 0 || margin.left < 0 || margin.right < 0;
     if (hasNegativeMargin) {
-      return Margin(margin: margin, child: child);
+      return Margin(
+          key: Key("padding:$mt@$hashCode"), margin: margin, child: child);
     } else {
       // 使用默认的 Padding 组件
       return Container(
+          key: Key("padding:$mt@$hashCode"),
           margin: EdgeInsets.only(
               left: margin.left,
               right: margin.right,

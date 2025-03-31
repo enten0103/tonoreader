@@ -10,8 +10,7 @@ class ReaderPage extends GetView<ReaderController> {
   @override
   Widget build(BuildContext context) {
     return switch (controller.type.value) {
-      "local" =>
-        TonoReader(filePath: controller.path.value, tonoType: TonoType.local),
+      "local" => TonoReader(id: controller.id.value, tonoType: TonoType.local),
       _ => Text("")
     };
   }

@@ -5,11 +5,13 @@ import 'package:voidlord/tono_reader/model/widget/tono_text.dart';
 import 'package:voidlord/tono_reader/render/widget/inline/tono_inline_render.dart';
 import 'package:voidlord/tono_reader/state/tono_data_provider.dart';
 import 'package:voidlord/tono_reader/tool/css_tool.dart';
+import 'package:voidlord/tono_reader/tool/text_splitd.dart';
 
 extension TonoTextRender on TonoInlineRender {
   ({InlineSpan span, bool newIndented}) renderText(
     TonoText tonoText,
     bool currentIndented,
+    int pageIndex,
   ) {
     final config = Get.find<TonoReaderConfig>();
     final css = tonoText.css.toMap();
@@ -31,6 +33,17 @@ extension TonoTextRender on TonoInlineRender {
       fontWeight: fontWeight,
     );
 
+    TextStyle ts2 = TextStyle(
+      shadows: shadow == null ? [] : [shadow],
+      fontSize: fontSize + 0.25,
+      fontFamily: fontFamily.isNotEmpty ? fontFamily[0] : null,
+      textBaseline: TextBaseline.alphabetic,
+      fontFamilyFallback: fontFamily,
+      height: lineHeight * config.lineSpacing,
+      color: textColor,
+      fontWeight: fontWeight,
+    );
+
     bool newIndented = currentIndented;
     String text = tonoText.text;
 
@@ -39,6 +52,27 @@ extension TonoTextRender on TonoInlineRender {
     } else if (tonoText.text == "\n") {
       newIndented = false;
     }
+    var father = tonoText.parent!;
+    if (father.extra['cn'] == "p") {
+      var textWithIndent = currentIndented ? text : "文文$text";
+      var pageIndexs = father.extra['pageIndex'] as List;
+      if (pageIndexs.length == 2 && pageIndex == pageIndexs[0]) {
+        if (father.extra['preP'] != 0) {
+          var nextText = TextSplitd.split(textWithIndent, ts2,
+              father.extra['cw'] as double, father.extra['nextP'] as int);
+          text = text.replaceAll(nextText, "");
+        }
+      } else if (pageIndexs.length == 2 && pageIndex == pageIndexs[1]) {
+        if (father.extra['nextP'] != 0) {
+          var nextText = TextSplitd.split(textWithIndent, ts2,
+              father.extra['cw'] as double, father.extra['nextP'] as int);
+          currentIndented = true;
+          text = nextText;
+        } else {
+          text = "";
+        }
+      }
+    }
 
     return (
       span: currentIndented
@@ -46,7 +80,9 @@ extension TonoTextRender on TonoInlineRender {
           : TextSpan(children: [
               WidgetSpan(
                   child: SizedBox(
-                width: currentIndented ? 0 : (fontSize * (indentCount ?? 0)),
+                width: currentIndented
+                    ? 0
+                    : ((fontSize + 0.25) * (indentCount ?? 0)),
               )),
               TextSpan(text: text, style: ts)
             ]),

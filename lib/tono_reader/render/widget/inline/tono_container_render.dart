@@ -22,10 +22,8 @@ extension TonoContainerRender on TonoInlineRender {
         child: TonoCssSizePadding(
           fitContent: true,
           child: ReversedColumn(
-              children: containerState.updateContainer(
-            inlineWidget,
-            indented: currentChildIndented,
-          )),
+              children: containerState.updateContainer(0, inlineWidget,
+                  indented: currentChildIndented)),
         ),
       ),
     );

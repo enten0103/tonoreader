@@ -6,22 +6,22 @@ import 'package:voidlord/tono_reader/state/tono_data_provider.dart';
 import 'package:voidlord/tono_reader/state/tono_flager.dart';
 import 'package:voidlord/tono_reader/ui/default/bottom_bar_view.dart';
 import 'package:voidlord/tono_reader/ui/default/content_view.dart';
+import 'package:voidlord/tono_reader/ui/default/paging_view.dart';
 import 'package:voidlord/tono_reader/ui/default/top_bar_view.dart';
 import 'package:voidlord/utils/type.dart';
 
 class TonoReader extends StatelessWidget {
   const TonoReader({
     super.key,
-    required this.filePath,
+    required this.id,
     required this.tonoType,
   });
-  final String filePath;
+  final String id;
   final TonoType tonoType;
 
   @override
   Widget build(BuildContext context) {
-    var controller =
-        Get.put(TonoReaderController(filePath: filePath, tonoType: tonoType));
+    var controller = Get.put(TonoReaderController(id: id, tonoType: tonoType));
     var flager = Get.put(TonoFlager());
 
     var dataProvoder = Get.put(TonoProvider());
@@ -36,15 +36,8 @@ class TonoReader extends StatelessWidget {
                       child: switch (flager.state.value) {
                         LoadingState.loading => _buildLoading(),
                         LoadingState.failed => _buildFailed(),
-                        LoadingState.success => ContentView(
-                            widget: controller.currentWidget,
-                            onTap: () {
-                              controller.onBodyClick();
-                            },
-                            onDoubleTap: (detail) {
-                              controller.siblingChapter(detail);
-                            },
-                          )
+                        LoadingState.success =>
+                          _buildSuccess(controller, flager)
                       })),
               // AppBar 的滑动动画
               Positioned(
@@ -79,13 +72,24 @@ class TonoReader extends StatelessWidget {
               ),
             ],
           ),
-          drawer: Drawer(
-            child: SizedBox(
-              height: 200,
-              child: Text("124"),
-            ),
-          ),
         ));
+  }
+
+  Widget _buildSuccess(TonoReaderController controller, TonoFlager flager) {
+    return Obx(() {
+      return AnimatedSwitcher(
+          duration: Duration(milliseconds: 300),
+          child: flager.paging.value
+              ? PagingView()
+              : ContentView(
+                  onTap: () {
+                    controller.onBodyClick();
+                  },
+                  onDoubleTap: (detail) {
+                    controller.siblingChapter(detail);
+                  },
+                ));
+    });
   }
 
   Widget _buildLoading() {

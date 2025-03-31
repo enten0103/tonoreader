@@ -35,6 +35,7 @@ class TonoCssMargin extends StatelessWidget {
     if (marginLeft == "auto" && marginRight == "auto") {
       return Center(
         child: AdaptiveMargin(
+          key: Key("${css['margin-top']}@$hashCode"),
           margin: parseMarginAll(css, fontSize) ?? EdgeInsets.zero,
           child: child,
         ),

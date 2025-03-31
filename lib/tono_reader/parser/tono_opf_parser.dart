@@ -20,18 +20,26 @@ extension TonoOpfParser on TonoParser {
     var parseItemResult = await parseItem(manifest, currentDir);
     var title = document.findAllElements("dc:title").first.innerText;
     TonoBookInfo tonoBookInfo =
-        TonoBookInfo(title: title, coverUrl: parseItemResult[3]);
-    List<TonoNavItem> tonoNavItems = parseItemResult[2];
+        TonoBookInfo(title: title, coverUrl: parseItemResult[4]);
+    List<TonoNavItem> tonoNavItems = parseItemResult[3];
     var ltwp = LocalTonoWidgetProvider(
-        widgets: parseItemResult[0], assets: parseItemResult[1]);
+        hash: provider.hash,
+        widgets: parseItemResult[0],
+        images: parseItemResult[1],
+        fonts: parseItemResult[2]);
     var spine = document.findAllElements("spine").first;
-    var xhtmls = await parseXhtmlList(spine, parseItemResult[4], currentDir);
+    var xhtmls = await parseXhtmlList(
+      spine,
+      parseItemResult[5],
+      currentDir,
+    );
     return Tono(
-        bookInfo: tonoBookInfo,
-        navItems: tonoNavItems,
-        widgetProvider: ltwp,
-        xhtmls: xhtmls,
-        fontPrefix: title);
+      bookInfo: tonoBookInfo,
+      navItems: tonoNavItems,
+      widgetProvider: ltwp,
+      xhtmls: xhtmls,
+      hash: provider.hash,
+    );
   }
 
   Future<List<String>> parseXhtmlList(
@@ -39,7 +47,7 @@ extension TonoOpfParser on TonoParser {
     var items = spine.findAllElements('itemref');
     List<String> result = [];
     for (var item in items) {
-      if (item.getAttribute('linear') == "yes") {
+      if (item.getAttribute('linear') != "no") {
         var idref = item.getAttribute("idref");
         if (idref != null && idref.endsWith("xhtml")) {
           result.add(idmap[idref]!);
@@ -52,7 +60,9 @@ extension TonoOpfParser on TonoParser {
   Future<List<dynamic>> parseItem(
       XmlElement manifest, String currentDir) async {
     Map<String, TonoWidget> widgets = {};
-    Map<String, Uint8List> assets = {};
+    Map<String, Uint8List> images = {};
+    Map<String, Uint8List> fonts = {};
+
     List<TonoNavItem> navItems = [];
     String coverUrl = "";
     Map<String, String> idmap = {};
@@ -67,19 +77,20 @@ extension TonoOpfParser on TonoParser {
       }
       if (item.getAttribute("media-type")?.startsWith("image") ?? false) {
         if (item.getAttribute("id")?.startsWith("cover") ?? false) {
-          coverUrl = fullPath;
+          coverUrl = p.basenameWithoutExtension(fullPath);
         }
-        assets[p.basenameWithoutExtension(fullPath)] =
+        images[p.basenameWithoutExtension(fullPath)] =
             (await provider.getFileByPath(fullPath))!;
       }
       if (item.getAttribute("media-type")?.contains("font") ?? false) {
-        assets[fullPath] = (await provider.getFileByPath(fullPath))!;
+        fonts[p.basenameWithoutExtension(fullPath)] =
+            (await provider.getFileByPath(fullPath))!;
       }
       if (href.endsWith("ncx")) {
         navItems.addAll(await parseNcx(fullPath));
       }
     }
-    return [widgets, assets, navItems, coverUrl, idmap];
+    return [widgets, images, fonts, navItems, coverUrl, idmap];
   }
 
   Future<List<TonoNavItem>> parseNcx(String nxcPath) async {

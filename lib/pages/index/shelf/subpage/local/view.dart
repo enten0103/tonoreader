@@ -16,35 +16,49 @@ class LocalShelfPage extends StatelessWidget {
     var localShelfPageController = Get.find<LocalShelfPageController>();
     return Scaffold(
       body: Padding(
-        padding: EdgeInsets.all(20),
-        child: Obx(() => Wrap(
-              children: localShelfPageController.bookLocalModels.map((x) {
-                return Column(children: [
-                  BookCover(
-                    id: x.id,
-                    url: x.coverUrl,
-                    onTap: () {
-                      Get.toNamed(VoidRouters.readerPage,
-                          arguments: "local/${x.id}");
-                    },
-                  ),
-                  SizedBox(
-                    width: 110,
-                    child: Text(
-                      x.title,
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  )
-                ]);
-              }).toList(),
-            )),
-      ),
+          padding: EdgeInsets.all(20),
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: Obx(() => Wrap(
+                  children: localShelfPageController.bookLocalModels.map((x) {
+                    return PhysicalModel(
+                        borderRadius: BorderRadius.circular(10),
+                        color: Colors.transparent,
+                        child: InkWell(
+                            borderRadius: BorderRadius.circular(8),
+                            onTap: () {
+                              Future.delayed(Duration(milliseconds: 200), () {
+                                Get.toNamed(VoidRouters.readerPage,
+                                    parameters: {
+                                      "id": x.id,
+                                      "type": "local",
+                                    });
+                              });
+                            },
+                            child: Container(
+                                padding: EdgeInsets.all(5),
+                                child: Column(children: [
+                                  BookCover(
+                                    id: x.id,
+                                    url: x.coverUrl,
+                                  ),
+                                  SizedBox(
+                                    width: 110,
+                                    child: Text(
+                                      x.title,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  )
+                                ]))));
+                  }).toList(),
+                )),
+          )),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add),
         onPressed: () {
           try {
-            LocalShelfPageController.addFile();
+            localShelfPageController.addFile();
           } catch (e) {
             log.w(e.toString());
           }

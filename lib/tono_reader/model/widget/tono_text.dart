@@ -7,8 +7,30 @@ class TonoText extends TonoWidget {
     required this.text,
     required this.css,
   });
+
   final String text;
   final List<TonoStyle> css;
+
+  static TonoText formMap(Map<String, dynamic> map) {
+    return TonoText(
+      className: map['className'],
+      text: map['text'] ?? '', // 提供默认值防止null
+      css: List<TonoStyle>.from(
+        (map['css'] as List).map((e) => TonoStyle.formMap(e)),
+      ),
+    );
+  }
+
+  @override
+  Map<String, dynamic> toMap() {
+    return {
+      "_type": "tonoText",
+      'className': className,
+      'text': text,
+      'css': css.map((style) => style.toMap()).toList(),
+    };
+  }
+
   @override
   String toString() {
     return text;

@@ -7,6 +7,7 @@ import 'package:voidlord/tono_reader/model/widget/tono_widget.dart';
 import 'package:voidlord/tono_reader/render/state/tono_container_state.dart';
 import 'package:voidlord/tono_reader/render/state/tono_css_provider.dart';
 import 'package:voidlord/tono_reader/render/tono_css/tono_css_border_bgc.dart';
+import 'package:voidlord/tono_reader/state/tono_prepager.dart';
 import 'package:voidlord/tono_reader/tool/css_tool.dart';
 
 /// 实现如下css
@@ -51,6 +52,20 @@ class TonoCssSizePadding extends StatelessWidget {
         if (ro != null) {
           var rb = ro as RenderBox;
           parentSize.value = rb.paintBounds.size;
+        }
+        if (tonoContainer.parent?.className == "body") {
+          var prepager = Get.find<TonoPrepager>();
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            var co = tonoContainer.sizedKey?.currentContext?.findRenderObject();
+            if (co != null) {
+              var crb = co as RenderBox;
+              tonoContainer.extra['height'] = crb.paintBounds.size.height;
+            }
+            prepager.total--;
+            if (prepager.total == 0) {
+              prepager.paging();
+            }
+          });
         }
       });
       var height = _parseHeight(cssHeight, parentSize.value.height, em);

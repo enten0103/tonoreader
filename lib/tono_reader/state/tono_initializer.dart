@@ -8,6 +8,7 @@ import 'package:voidlord/tono_reader/render/state/tono_container_state.dart';
 import 'package:voidlord/tono_reader/render/state/tono_css_provider.dart';
 import 'package:voidlord/tono_reader/state/tono_assets_provider.dart';
 import 'package:voidlord/tono_reader/state/tono_data_provider.dart';
+import 'package:voidlord/tono_reader/state/tono_prepager.dart';
 import 'package:voidlord/tono_reader/state/tono_progresser.dart';
 
 class TonoInitializer {
@@ -15,15 +16,14 @@ class TonoInitializer {
     _loadFont(tono);
     _loadState();
     _loadConfig();
-    _initData(tono);
+    await _initData(tono);
   }
 
   static Future<void> _loadFont(Tono tono) async {
     var fonts = await tono.widgetProvider.getAllFont();
     for (var font in fonts.entries) {
       var fontName = p.basenameWithoutExtension(font.key);
-      await loadFontFromList(font.value,
-          fontFamily: tono.fontPrefix + fontName);
+      await loadFontFromList(font.value, fontFamily: tono.hash + fontName);
     }
   }
 
@@ -32,13 +32,14 @@ class TonoInitializer {
     Get.put(TonoAssetsProvider());
     Get.put(TonoContainerState());
     Get.put(TonoProgresser());
+    Get.put(TonoPrepager());
   }
 
   static _loadConfig() {
     Get.put(TonoReaderConfig());
   }
 
-  static _initData(Tono tono) {
-    Get.find<TonoProvider>().init(tono);
+  static _initData(Tono tono) async {
+    await Get.find<TonoProvider>().init(tono);
   }
 }

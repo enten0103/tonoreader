@@ -11,15 +11,15 @@ class BookCover extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return PhysicalModel(
-        elevation: 1,
-        borderRadius: BorderRadius.circular(8),
-        color: Colors.transparent,
-        child: SizedBox(
-            width: 110,
-            height: 160,
-            child: InkWell(
-              onTap: onTap,
+    return InkWell(
+        onTap: onTap,
+        child: PhysicalModel(
+            elevation: 1,
+            borderRadius: BorderRadius.circular(8),
+            color: Colors.transparent,
+            child: SizedBox(
+              width: 110,
+              height: 160,
               child: Hero(
                   tag: id,
                   child: ClipRRect(

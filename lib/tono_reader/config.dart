@@ -27,5 +27,5 @@ class TonoReaderConfig {
 
   ///视口设置
   ViewPortConfig viewPortConfig =
-      ViewPortConfig(left: 20, right: 20, top: 0, bottom: 0);
+      ViewPortConfig(left: 20, right: 20, top: 0, bottom: 20);
 }

@@ -15,11 +15,13 @@ class TonoInlineContainerWidget extends StatelessWidget {
   const TonoInlineContainerWidget({
     super.key,
     required this.inlineWidgets,
+    required this.pageIndex,
     this.indented = false,
   });
 
   final List<TonoWidget> inlineWidgets;
   final bool indented;
+  final int pageIndex;
   @override
   Widget build(BuildContext context) {
     var cssProvider = Get.find<TonoCssProvider>();
@@ -28,7 +30,8 @@ class TonoInlineContainerWidget extends StatelessWidget {
     List<InlineSpan> spans = [];
     for (final widget in inlineWidgets) {
       if (widget is TonoText) {
-        final result = inlineRender.renderText(widget, currentIndented);
+        final result =
+            inlineRender.renderText(widget, currentIndented, pageIndex);
         spans.add(result.span);
         currentIndented = result.newIndented;
       } else if (widget is TonoContainer) {

@@ -20,8 +20,11 @@ extension TonoSelectorMacher on TonoParser {
     }
     if (style == null) return result;
     var splitedStyle = style.split(';');
-    for (var i = 0; i < splitedStyle.length - 1; i++) {
-      var rule = splitedStyle[i].split(":");
+    for (var ss in splitedStyle) {
+      if (ss.trim() == "") {
+        continue;
+      }
+      var rule = ss.split(":");
       var property = rule[0];
       var value = rule[1];
       if (property == 'margin') {
