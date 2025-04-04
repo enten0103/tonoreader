@@ -43,17 +43,19 @@ class TonoRubyWidget extends StatelessWidget {
 
     return TonoCssMargin(
         child: TonoCssSizePadding(
+            icontainer: tonoRuby,
             child: RubyText(
-      rtds,
-      style: TextStyle(
-        fontSize: fontSize,
-        height: lineHeight * config.lineSpacing,
-        fontFamilyFallback: fontFamily,
-        fontWeight: fontWeight,
-      ),
-      textAlign: css["text-align"] == 'center' ? TextAlign.center : null,
-      rubyStyle: TextStyle(height: config.rubySize),
-    )));
+              rtds,
+              style: TextStyle(
+                fontSize: fontSize,
+                height: lineHeight * config.lineSpacing,
+                fontFamilyFallback: fontFamily,
+                fontWeight: fontWeight,
+              ),
+              textAlign:
+                  css["text-align"] == 'center' ? TextAlign.center : null,
+              rubyStyle: TextStyle(height: config.rubySize),
+            )));
   }
 
   double? parseLineHeight(String? cssLineHeight, double em) {

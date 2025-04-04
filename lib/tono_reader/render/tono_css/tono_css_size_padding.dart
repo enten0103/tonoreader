@@ -22,12 +22,14 @@ class TonoCssSizePadding extends StatelessWidget {
     this.fitContent,
     this.icss,
     this.icontainer,
+    this.pageIndex,
     required this.child,
   });
   final List<TonoStyle>? icss;
   final TonoWidget? icontainer;
   final bool? fitContent;
   final Widget child;
+  final int? pageIndex;
   @override
   Widget build(BuildContext context) {
     GlobalKey key = GlobalKey();
@@ -43,6 +45,9 @@ class TonoCssSizePadding extends StatelessWidget {
     var cssMaxWidth = css['max-width'];
     var cssHeight = css['height']?.replaceAll("!important", "");
     var cssMaxHeight = css['max-height']?.replaceAll("!important", "");
+    var lineHeight = css['line-height'] == null
+        ? null
+        : parseUnit(css['line-height']!, parentSize.value.width, em) / em;
     tonoContainer.extra['hb'] = _parseHBorder(css, em, parentSize.value.width);
     tonoContainer.extra['vb'] = _parseVBorder(css, em, parentSize.value.width);
     return Obx(() {
@@ -106,6 +111,31 @@ class TonoCssSizePadding extends StatelessWidget {
         decoration: css.boxDecoration(em),
         child: child,
       );
+      if (pageIndex != null) {
+        if (tonoContainer.extra['cn'] == "p") {
+          if ((tonoContainer.extra['pageIndex'] as List).length == 2) {
+            if ((tonoContainer.extra['pageIndex'] as List)[0] == pageIndex!) {
+              int preP = tonoContainer.extra['preP'];
+              return ClipRect(
+                  child: SizedBox(
+                height: preP * (lineHeight ?? 1) * em,
+                child: container,
+              ));
+            }
+            if ((tonoContainer.extra['pageIndex'] as List)[1] == pageIndex!) {
+              int preP = tonoContainer.extra['preP'];
+              int nextP = tonoContainer.extra['nextP'];
+              return ClipRect(
+                  child: SizedBox(
+                height: nextP * (lineHeight ?? 1) * em,
+                child: Transform.translate(
+                    offset: Offset(0, -preP * (lineHeight ?? 1) * em),
+                    child: container),
+              ));
+            }
+          }
+        }
+      }
 
       if (cssWidth?.contains("fit-content") ?? false || fitContent == true) {
         return IntrinsicWidth(child: container);

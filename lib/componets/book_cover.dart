@@ -17,8 +17,8 @@ class BookCover extends StatelessWidget {
             elevation: 1,
             borderRadius: BorderRadius.circular(8),
             color: Colors.transparent,
-            child: SizedBox(
-              width: 110,
+            child: Container(
+              constraints: BoxConstraints(maxWidth: 110),
               height: 160,
               child: Hero(
                   tag: id,

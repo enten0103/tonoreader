@@ -42,7 +42,10 @@ class TonoContainerState extends GetxController {
             ));
             inlineChildren.clear();
           }
-          children.add(TonoRubyWidget(tonoRuby: child));
+          children.add(TonoRubyWidget(
+              key: Key(
+                  "height:${child.extra['totalHeight']} currentHeight:${child.extra['currentHeight']} margin:${child.extra['margin']} @${child.hashCode}"),
+              tonoRuby: child));
         } else if (child is TonoContainer) {
           if (child.display == "inline") {
             inlineChildren.add(child);

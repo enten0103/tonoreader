@@ -14,18 +14,24 @@ class LocalShelfPage extends StatelessWidget {
   Widget build(BuildContext context) {
     var log = Get.find<Logger>();
     var localShelfPageController = Get.find<LocalShelfPageController>();
+    var width = (Get.mediaQuery.size.width - 40) / 3;
     return Scaffold(
       body: Padding(
           padding: EdgeInsets.all(20),
           child: Align(
             alignment: Alignment.topCenter,
-            child: Obx(() => Wrap(
+            child: Obx(() => GridView.count(
+                  crossAxisCount: 3,
+                  childAspectRatio: width / 220,
                   children: localShelfPageController.bookLocalModels.map((x) {
                     return PhysicalModel(
                         borderRadius: BorderRadius.circular(10),
                         color: Colors.transparent,
                         child: InkWell(
                             borderRadius: BorderRadius.circular(8),
+                            onLongPress: () {
+                              localShelfPageController.delete(x.id);
+                            },
                             onTap: () {
                               Future.delayed(Duration(milliseconds: 200), () {
                                 Get.toNamed(VoidRouters.readerPage,
@@ -42,8 +48,8 @@ class LocalShelfPage extends StatelessWidget {
                                     id: x.id,
                                     url: x.coverUrl,
                                   ),
-                                  SizedBox(
-                                    width: 110,
+                                  Container(
+                                    constraints: BoxConstraints(maxWidth: 110),
                                     child: Text(
                                       x.title,
                                       maxLines: 2,

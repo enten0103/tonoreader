@@ -34,14 +34,6 @@ class PagingView extends StatelessWidget {
             padding: EdgeInsetsDirectional.fromSTEB(
                 border.left, border.top, border.right, border.bottom),
             child: Stack(children: [
-              Container(
-                color: Colors.white,
-                width: Get.mediaQuery.size.width,
-                height: Get.mediaQuery.size.height,
-                child: Center(
-                  child: Text("paging"),
-                ),
-              ),
               SafeArea(
                   child: SizedBox.expand(
                       child: SingleChildScrollView(

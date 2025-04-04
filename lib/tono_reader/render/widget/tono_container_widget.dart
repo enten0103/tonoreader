@@ -35,6 +35,7 @@ class TonoContainerWidget extends StatelessWidget {
           "preP:${tonoContainer.extra['preP']} nextP:${tonoContainer.extra['nextP']}@$hashCode"),
       child: TonoCssMargin(
         child: TonoCssSizePadding(
+          pageIndex: pageIndex,
           fitContent: fit,
           child: tonoContainer.className == "html"
               ? children[0]

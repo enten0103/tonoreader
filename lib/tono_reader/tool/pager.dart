@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/painting.dart';
 import 'package:get/get_core/src/get_main.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
@@ -10,34 +10,6 @@ import 'package:voidlord/tono_reader/model/widget/tono_widget.dart';
 import 'package:voidlord/tono_reader/tool/css_tool.dart';
 
 extension TonoPager on TonoWidget {
-  ///预测实际行数，低效率高精准
-  ///后续应确认各字符长度并重写
-  int predictTextLines({
-    required String text,
-    required double indented,
-    required double fontSize,
-    required double containerWidth,
-  }) {
-    if (containerWidth <= 0 || fontSize <= 0 || text.isEmpty) {
-      return 0;
-    }
-
-    final textSpan = TextSpan(
-      children: [TextSpan(text: '${'文' * (indented ~/ fontSize)}$text')],
-      style: TextStyle(
-        fontSize: fontSize + 0.25,
-      ),
-    );
-
-    final textPainter = TextPainter(
-      text: textSpan,
-      textDirection: TextDirection.ltr, // 或根据实际文本方向设置
-    );
-
-    textPainter.layout(maxWidth: containerWidth);
-    return textPainter.computeLineMetrics().length;
-  }
-
   int paging() {
     var config = Get.put(TonoReaderConfig());
     var currentIndex = 1;
@@ -60,31 +32,29 @@ extension TonoPager on TonoWidget {
           } else {
             margin = preMarginBottom > marginTop ? preMarginBottom : marginTop;
           }
-
           var totalHeight = margin + height;
-
           currentHeight += totalHeight;
-
           if (child.extra['pageIndex'] == null) {
             child.extra['pageIndex'] = [];
           }
           if (currentHeight + marginBottom > renderHeight) {
-            if (child.extra['cn'] == 'p') {
-              double lineHeight = child.extra['line-height'];
-              int line = child.extra['line'];
-              var heightDif = currentHeight + marginBottom - renderHeight;
-              var nextP = (heightDif / lineHeight).ceil();
-              var preP = line - nextP;
-              child.extra['preP'] = preP;
-              if (preP != 0) {
+            if (child.extra['cn'] == "p") {
+              var nextHeight = currentHeight + marginBottom - renderHeight;
+              var lineHeight = child.extra['line-height'];
+              var lineCount = child.extra['line'];
+              var nextLineCount = (nextHeight / lineHeight).ceil();
+              var preLineCount = lineCount - nextLineCount;
+              preLineCount = preLineCount < 0 ? 0 : preLineCount;
+              child.extra['nextP'] = nextLineCount;
+              child.extra['preP'] = preLineCount;
+              if (preLineCount != 0) {
                 (child.extra['pageIndex'] as List).add(currentIndex);
               }
-              currentIndex++;
-              child.extra['nextP'] = nextP;
-              if (nextP != 0) {
+              if (nextLineCount != 0) {
+                currentIndex++;
                 (child.extra['pageIndex'] as List).add(currentIndex);
+                currentHeight = totalHeight - lineHeight * preLineCount;
               }
-              currentHeight = totalHeight - preP * lineHeight;
             } else {
               currentIndex++;
               (child.extra['pageIndex'] as List).add(currentIndex);
@@ -128,9 +98,9 @@ extension TonoPager on TonoWidget {
               var css = ttext.css.toMap();
               var cssIndent = css["text-indent"];
               var paddingSize = genPaddingSize(containerSize, child);
-              double indent = 0;
+              int indent = 0;
               if (cssIndent != null) {
-                indent = parseUnit(cssIndent, 0, em);
+                indent = (parseUnit(cssIndent, 0, em) / em).toInt();
               }
               var containerWidth =
                   width - paddingSize.width - margin.left - margin.right;
@@ -140,7 +110,6 @@ extension TonoPager on TonoWidget {
                   fontSize: em,
                   containerWidth: containerWidth);
               var lineHeight = parseLineHeight(css['line-height'], em) * em;
-              child.extra['cw'] = containerWidth;
               child.extra['cn'] = "p";
               child.extra['line-height'] = lineHeight;
               child.extra['line'] = line;
@@ -155,6 +124,33 @@ extension TonoPager on TonoWidget {
       }
     }
     return 0;
+  }
+
+  int predictTextLines({
+    required String text,
+    required int indented,
+    required double fontSize,
+    required double containerWidth,
+  }) {
+    if (containerWidth <= 0 || fontSize <= 0 || text.isEmpty) {
+      return 0;
+    }
+    for (var i = 0; i < indented; i++) {
+      text = "文$text";
+    }
+    final textSpan = TextSpan(
+      text: text,
+      style: TextStyle(
+        fontSize: fontSize + 1,
+      ),
+    );
+
+    final textPainter = TextPainter(
+      text: textSpan,
+      textDirection: TextDirection.ltr, // 必须明确设置文本方向
+    );
+    textPainter.layout(maxWidth: containerWidth);
+    return textPainter.computeLineMetrics().length;
   }
 
   double parseLineHeight(String? cssLineHeight, double em) {

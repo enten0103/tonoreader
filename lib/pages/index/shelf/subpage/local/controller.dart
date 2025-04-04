@@ -12,6 +12,17 @@ import 'package:voidlord/tono_reader/tool/tono_serializer.dart';
 class LocalShelfPageController extends GetxController {
   RxList<BookReaderModel> bookLocalModels = <BookReaderModel>[].obs;
 
+  void delete(String id) async {
+    var baseDir = await getApplicationDocumentsDirectory();
+    var bookDir = Directory(p.join(baseDir.path, "book", id));
+    if (await bookDir.exists()) {
+      bookDir.delete(recursive: true);
+    }
+    bookLocalModels.removeWhere((e) {
+      return e.id == id;
+    });
+  }
+
   void addFile() async {
     FilePickerResult? result = await FilePicker.platform
         .pickFiles(type: FileType.custom, allowedExtensions: ["epub"]);
