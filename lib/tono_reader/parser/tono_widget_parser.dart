@@ -38,7 +38,7 @@ extension TonoWidgetParser on TonoParser {
 
   Future<TonoWidget> parseWidget(String filePath) async {
     var logger = Logger();
-    logger.i("filePatt:$filePath widget parse start......");
+    logger.i("filePath:$filePath widget parse start......");
     final htmlContent = await provider.getFileByPath(filePath);
 
     ///获取document
@@ -57,13 +57,11 @@ extension TonoWidgetParser on TonoParser {
       tw.parent = parent;
     } else if (tw is TonoContainer) {
       tw.parent = parent;
-      if (tw.children != null) {
-        for (var child in tw.children!) {
-          if (child == tw.children!.last) {
-            child.extra['last'] = true;
-          }
-          addParent(child, tw);
+      for (var child in tw.children) {
+        if (child == tw.children.last) {
+          child.extra['last'] = true;
         }
+        addParent(child, tw);
       }
     }
   }

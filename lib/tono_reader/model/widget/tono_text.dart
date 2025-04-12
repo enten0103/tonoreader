@@ -3,17 +3,14 @@ import 'package:voidlord/tono_reader/model/widget/tono_widget.dart';
 
 class TonoText extends TonoWidget {
   TonoText({
-    super.className,
     required this.text,
-    required this.css,
-  });
+    required super.css,
+  }) : super(className: "text_node");
 
   final String text;
-  final List<TonoStyle> css;
 
   static TonoText formMap(Map<String, dynamic> map) {
     return TonoText(
-      className: map['className'],
       text: map['text'] ?? '', // 提供默认值防止null
       css: List<TonoStyle>.from(
         (map['css'] as List).map((e) => TonoStyle.formMap(e)),

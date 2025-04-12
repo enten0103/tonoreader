@@ -81,7 +81,7 @@ extension ContainerParser on TonoParser {
     return TonoContainer(
       css: matchedCss,
       children: children,
-      className: element.localName,
+      className: element.localName!,
       display: display,
     );
   }

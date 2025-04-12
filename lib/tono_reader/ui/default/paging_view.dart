@@ -47,7 +47,6 @@ class PagingView extends StatelessWidget {
                       child: Align(
                           alignment: Alignment.centerLeft,
                           child: TonoContainerWidget(
-                              pageIndex: 0,
                               tonoContainer: e as TonoContainer)));
                 }).toList(),
               )))),

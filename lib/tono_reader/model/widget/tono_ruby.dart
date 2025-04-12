@@ -1,5 +1,5 @@
 import 'package:voidlord/tono_reader/model/style/tono_style.dart';
-import 'package:voidlord/tono_reader/model/widget/tono_container.dart';
+import 'package:voidlord/tono_reader/model/widget/tono_widget.dart';
 
 class RubyItem {
   RubyItem({
@@ -20,12 +20,11 @@ class RubyItem {
   }
 }
 
-class TonoRuby extends TonoContainer {
+class TonoRuby extends TonoWidget {
   TonoRuby({
-    super.className,
     required super.css,
     required this.texts,
-  }) : super(display: "block");
+  }) : super(className: "ruby");
   final List<RubyItem> texts;
   @override
   Map<String, dynamic> toMap() {
@@ -39,7 +38,6 @@ class TonoRuby extends TonoContainer {
 
   static TonoRuby formMap(Map<String, dynamic> map) {
     return TonoRuby(
-      className: map['className'],
       css: List.from(map['css'].map((e) => TonoStyle.formMap(e)).toList()),
       texts: List<RubyItem>.from(
           map['texts'].map((e) => RubyItem.formMap(e)).toList()),

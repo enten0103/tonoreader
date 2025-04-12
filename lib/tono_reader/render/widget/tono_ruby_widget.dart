@@ -4,8 +4,8 @@ import 'package:ruby_text/ruby_text.dart';
 import 'package:voidlord/tono_reader/config.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_ruby.dart';
 import 'package:voidlord/tono_reader/render/state/tono_container_state.dart';
-import 'package:voidlord/tono_reader/render/tono_css/tono_css_margin.dart';
-import 'package:voidlord/tono_reader/render/tono_css/tono_css_size_padding.dart';
+import 'package:voidlord/tono_reader/render/tono_css/tono_css_margin_widget.dart';
+import 'package:voidlord/tono_reader/render/tono_css/tono_css_size_padding_widget.dart';
 import 'package:voidlord/tono_reader/state/tono_data_provider.dart';
 import 'package:voidlord/tono_reader/tool/css_tool.dart';
 
@@ -41,21 +41,19 @@ class TonoRubyWidget extends StatelessWidget {
     var lineHeight = parseLineHeight(css['line-height'], fontSize) ?? 1;
     var fontWeight = parseFontWeight(css['font-weight']);
 
-    return TonoCssMargin(
-        child: TonoCssSizePadding(
-            icontainer: tonoRuby,
+    return TonoCssMarginWidget(
+        child: TonoCssSizePaddingWidget(
             child: RubyText(
-              rtds,
-              style: TextStyle(
-                fontSize: fontSize,
-                height: lineHeight * config.lineSpacing,
-                fontFamilyFallback: fontFamily,
-                fontWeight: fontWeight,
-              ),
-              textAlign:
-                  css["text-align"] == 'center' ? TextAlign.center : null,
-              rubyStyle: TextStyle(height: config.rubySize),
-            )));
+      rtds,
+      style: TextStyle(
+        fontSize: fontSize,
+        height: lineHeight * config.lineSpacing,
+        fontFamilyFallback: fontFamily,
+        fontWeight: fontWeight,
+      ),
+      textAlign: css["text-align"] == 'center' ? TextAlign.center : null,
+      rubyStyle: TextStyle(height: config.rubySize),
+    )));
   }
 
   double? parseLineHeight(String? cssLineHeight, double em) {

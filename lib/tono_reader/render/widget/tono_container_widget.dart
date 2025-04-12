@@ -3,9 +3,9 @@ import 'package:get/get.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_container.dart';
 import 'package:voidlord/tono_reader/render/state/tono_container_state.dart';
 import 'package:voidlord/tono_reader/render/state/tono_css_provider.dart';
-import 'package:voidlord/tono_reader/render/tono_css/tono_css_margin.dart';
-import 'package:voidlord/tono_reader/render/tono_css/tono_css_size_padding.dart';
-import 'package:voidlord/tono_reader/render/tono_css/tono_css_transform.dart';
+import 'package:voidlord/tono_reader/render/tono_css/tono_css_margin_widget.dart';
+import 'package:voidlord/tono_reader/render/tono_css/tono_css_size_padding_widget.dart';
+import 'package:voidlord/tono_reader/render/tono_css/tono_css_transform_widget.dart';
 import 'package:voidlord/tono_reader/state/tono_flager.dart';
 import 'package:voidlord/tono_reader/tool/constained_row.dart';
 import 'package:voidlord/tono_reader/tool/css_tool.dart';
@@ -14,29 +14,23 @@ import 'package:voidlord/tono_reader/tool/reversed_column.dart';
 class TonoContainerWidget extends StatelessWidget {
   const TonoContainerWidget({
     super.key,
-    required this.pageIndex,
     required this.tonoContainer,
   });
 
   final TonoContainer tonoContainer;
-  final int pageIndex;
 
   @override
   Widget build(BuildContext context) {
     Get.find<TonoCssProvider>().updateCss(tonoContainer.css);
     var flager = Get.find<TonoFlager>();
     var tonoContainerState = Get.find<TonoContainerState>();
-    var children = tonoContainerState.updateContainer(pageIndex, tonoContainer);
+    var children = tonoContainerState.updateContainer(tonoContainer);
     var css = tonoContainer.css.toMap();
-    var fit = tonoContainer.className == 'td' ||
-        (css['width']?.contains("fit-content") ?? false);
-    var result = TonoCssTransform(
+    var result = TonoCssTransformWidget(
       key: Key(
           "preP:${tonoContainer.extra['preP']} nextP:${tonoContainer.extra['nextP']}@$hashCode"),
-      child: TonoCssMargin(
-        child: TonoCssSizePadding(
-          pageIndex: pageIndex,
-          fitContent: fit,
+      child: TonoCssMarginWidget(
+        child: TonoCssSizePaddingWidget(
           child: tonoContainer.className == "html"
               ? children[0]
               : tonoContainer.className == "body" && !flager.paging.value

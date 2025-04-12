@@ -1,0 +1,81 @@
+import 'package:voidlord/tono_reader/render/tools/tono_css_converter.dart';
+
+//
+// 检查到有未实现的css-width关键字
+class UnimplementedWidthKeyWordError extends Error {
+  UnimplementedWidthKeyWordError({required this.message});
+  final String message;
+}
+
+///CssWidth
+abstract class CssWidth {}
+
+///
+/// CssWidth关键词
+/// 已实现 [auto] [fit-content]
+enum CssWidthKeyWords {
+  auto,
+  fitContent,
+}
+
+///
+/// CssWidth length values
+class ValuedCssWidth extends CssWidth {
+  ValuedCssWidth({required this.value});
+  final double value;
+  @override
+  String toString() {
+    return value.toString();
+  }
+}
+
+///
+/// CssKeyWordsWidth
+class KeyWordCssWidth extends CssWidth {
+  KeyWordCssWidth({required this.keyWord});
+  final CssWidthKeyWords keyWord;
+  @override
+  String toString() {
+    return keyWord.name;
+  }
+}
+
+///
+/// css [width] [max-width] 实现
+extension TonoCssWidth on FlutterStyleFromCss {
+  ///
+  /// css [width] -> [CssWidth]
+  CssWidth? get width => _parseWidth(css['width']);
+
+  /// css [max-width] -> [CssWidth]
+  CssWidth? get maxWidth => _parseWidth(css['max-width']);
+  CssWidth? _parseWidth(String? raw) {
+    if (raw == null) {
+      if (css['display'] != "flex" && css['display'] != "inline") {
+        return ValuedCssWidth(value: double.infinity);
+      }
+      return null;
+    }
+
+    var widthValue = raw.toValue();
+
+    if (widthValue == "auto" ||
+        widthValue == "inherit" ||
+        widthValue == "initial" ||
+        widthValue == "unset") {
+      return KeyWordCssWidth(keyWord: CssWidthKeyWords.auto);
+    }
+    if (widthValue == "fit-content") {
+      return KeyWordCssWidth(keyWord: CssWidthKeyWords.fitContent);
+    }
+
+    /// 未实现关键字
+    if (widthValue == "max-content" ||
+        widthValue == "min-content" ||
+        widthValue.contains("fit-content")) {
+      throw UnimplementedWidthKeyWordError(message: "keyWord:${css['width']}");
+    }
+
+    return ValuedCssWidth(value: parseUnit(widthValue, parentSize?.width, em));
+  }
+}

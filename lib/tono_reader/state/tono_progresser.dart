@@ -6,7 +6,7 @@ class TonoProgresser extends GetxController {
     initialPage: 0,
   );
 
-  var pageIndex = 0.obs;
+  var pageIndex = 1.obs;
 
   int totalPageCount = 0;
 

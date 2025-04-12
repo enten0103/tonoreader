@@ -52,7 +52,6 @@ class TonoReaderController extends GetxController {
     }
     var xhtmlId = tonoDataProvider.xhtmls[xhtmlIndex];
     return TonoContainerWidget(
-        pageIndex: index,
         tonoContainer:
             await tonoDataProvider.getWidgetById(xhtmlId) as TonoContainer);
   }

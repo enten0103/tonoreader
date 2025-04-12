@@ -4,11 +4,10 @@ import 'package:voidlord/tono_reader/model/widget/tono_widget.dart';
 class TonoImage extends TonoWidget {
   TonoImage({
     required this.url,
-    required this.css,
-  });
+    required super.css,
+  }) : super(className: "img");
   final String url;
 
-  final List<TonoStyle> css;
   static TonoImage fromMap(Map<String, dynamic> map) {
     return TonoImage(
         url: map['url'] as String,

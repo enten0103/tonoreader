@@ -15,10 +15,10 @@ extension TonoPager on TonoWidget {
     var currentIndex = 1;
     if (this is TonoContainer) {
       TonoContainer html = this as TonoContainer;
-      var body = html.children?[0];
+      var body = html.children[0];
       if (body is TonoContainer) {
         var containerSize = genContainerSize(html, body, config);
-        var children = body.children!;
+        var children = body.children;
         var renderHeight = containerSize.height;
         var preMarginBottom = 0.0;
         var currentHeight = 0.0;
@@ -79,9 +79,9 @@ extension TonoPager on TonoWidget {
     var config = Get.put(TonoReaderConfig());
     if (this is TonoContainer) {
       TonoContainer html = this as TonoContainer;
-      var body = html.children?[0];
+      var body = html.children[0];
       if (body is TonoContainer) {
-        var children = body.children!;
+        var children = body.children;
         var containerSize = genContainerSize(html, body, config);
         var width = containerSize.width;
         var count = children.length;
@@ -90,11 +90,10 @@ extension TonoPager on TonoWidget {
             var em = child.css.getFontSize();
             var margin =
                 parseMarginAll(child.css.toMap(), em) ?? EdgeInsets.zero;
-            if ((child.className == "p" ||
-                    (child.className?.startsWith("h") ?? false)) &&
-                child.children?.length == 1 &&
-                child.children?[0] is TonoText) {
-              var ttext = child.children?[0] as TonoText;
+            if ((child.className == "p" || child.className.startsWith("h")) &&
+                child.children.length == 1 &&
+                child.children[0] is TonoText) {
+              var ttext = child.children[0] as TonoText;
               var css = ttext.css.toMap();
               var cssIndent = css["text-indent"];
               var paddingSize = genPaddingSize(containerSize, child);

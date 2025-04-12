@@ -1,0 +1,2 @@
+C:/Users/renren/Desktop/tonoreader/android/app/.cxx/Debug/s6f3m2v2/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Users/renren/Desktop/tonoreader/android/app/.cxx/Debug/s6f3m2v2/armeabi-v7a/CMakeFiles/rebuild_cache.dir
