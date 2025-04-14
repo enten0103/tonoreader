@@ -4,8 +4,9 @@ import 'package:voidlord/tono_reader/model/widget/tono_container.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_text.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_widget.dart';
 import 'package:voidlord/tono_reader/render/state/tono_container_provider.dart';
-import 'package:voidlord/tono_reader/render/tono_css/tono_css_size_padding_widget.dart';
+import 'package:voidlord/tono_reader/render/css_impl/tono_css_size_padding_widget.dart';
 import 'package:voidlord/tono_reader/tool/span_table.dart';
+import 'package:voidlord/tono_reader/tool/styled_border.dart';
 
 class UserPage extends StatelessWidget {
   const UserPage({super.key});
@@ -17,10 +18,12 @@ class UserPage extends StatelessWidget {
           width: 300,
           height: 600,
           decoration: BoxDecoration(
-              border: Border.all(
-            color: Colors.blue,
-            width: 1,
-          )),
+            border: StyledBorder(
+                top: StyledBorderSide(
+                    width: 2,
+                    color: Colors.blue,
+                    borderStyle: BorderCustomStyle.dashed)),
+          ),
           child: SpanTable(data: [
             [
               SpanCell(child: Text("Person")),
@@ -50,6 +53,14 @@ class UserPage extends StatelessWidget {
         ),
       ),
     );
+  }
+}
+
+class TestWidget4 extends StatelessWidget {
+  const TestWidget4({required super.key});
+  @override
+  Widget build(BuildContext context) {
+    throw UnimplementedError();
   }
 }
 

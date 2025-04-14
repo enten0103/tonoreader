@@ -10,6 +10,8 @@ extension TonoSelectorMacher on TonoParser {
   List<TonoStyle> genInlineStyle(dom.Element element) {
     var style = element.attributes['style'];
     List<TonoStyle> result = [];
+
+    /// 添加用户代理样式表
     if (element.localName == "hr") {
       result.add(TonoStyle(
           priority: -100, value: "1px", property: "border-top-width"));
@@ -18,6 +20,12 @@ extension TonoSelectorMacher on TonoParser {
       result.add(
           TonoStyle(priority: -100, value: "0.5em", property: "margin-bottom"));
     }
+
+    if (element.localName == "tr") {
+      result.add(TonoStyle(priority: -100, value: "flex", property: "display"));
+    }
+
+    /// 解析内联样式
     if (style == null) return result;
     var splitedStyle = style.split(';');
     for (var ss in splitedStyle) {

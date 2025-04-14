@@ -47,7 +47,8 @@ class DashedBoxBorder extends BoxBorder {
         final Path path = Path()
           ..moveTo(rect.left, rect.top)
           ..lineTo(rect.right, rect.top);
-        final Path dashedPath = _generateDashedPath(path, dashLength: dashPattern[0], gapLength: dashPattern[1]);
+        final Path dashedPath = _generateDashedPath(path,
+            dashLength: dashPattern[0], gapLength: dashPattern[1]);
         canvas.drawPath(dashedPath, paint);
       }
       if (bottom != BorderSide.none) {
@@ -58,7 +59,8 @@ class DashedBoxBorder extends BoxBorder {
         final Path path = Path()
           ..moveTo(rect.left, rect.bottom)
           ..lineTo(rect.right, rect.bottom);
-        final Path dashedPath = _generateDashedPath(path, dashLength: dashPattern[0], gapLength: dashPattern[1]);
+        final Path dashedPath = _generateDashedPath(path,
+            dashLength: dashPattern[0], gapLength: dashPattern[1]);
         canvas.drawPath(dashedPath, paint);
       }
       if (left != BorderSide.none) {
@@ -69,7 +71,8 @@ class DashedBoxBorder extends BoxBorder {
         final Path path = Path()
           ..moveTo(rect.left, rect.top)
           ..lineTo(rect.left, rect.bottom);
-        final Path dashedPath = _generateDashedPath(path, dashLength: dashPattern[0], gapLength: dashPattern[1]);
+        final Path dashedPath = _generateDashedPath(path,
+            dashLength: dashPattern[0], gapLength: dashPattern[1]);
         canvas.drawPath(dashedPath, paint);
       }
       if (right != BorderSide.none) {
@@ -80,7 +83,8 @@ class DashedBoxBorder extends BoxBorder {
         final Path path = Path()
           ..moveTo(rect.right, rect.top)
           ..lineTo(rect.right, rect.bottom);
-        final Path dashedPath = _generateDashedPath(path, dashLength: dashPattern[0], gapLength: dashPattern[1]);
+        final Path dashedPath = _generateDashedPath(path,
+            dashLength: dashPattern[0], gapLength: dashPattern[1]);
         canvas.drawPath(dashedPath, paint);
       }
     } else {
@@ -104,13 +108,14 @@ class DashedBoxBorder extends BoxBorder {
       } else {
         path = Path()..addRRect(borderRadius!.toRRect(rect));
       }
-      final Path dashedPath = _generateDashedPath(path, dashLength: dashPattern[0], gapLength: dashPattern[1]);
+      final Path dashedPath = _generateDashedPath(path,
+          dashLength: dashPattern[0], gapLength: dashPattern[1]);
       canvas.drawPath(dashedPath, paint);
     }
   }
 
-  // 生成虚线路径的核心逻辑（保持不变）
-  Path _generateDashedPath(Path path, {required double dashLength, required double gapLength}) {
+  Path _generateDashedPath(Path path,
+      {required double dashLength, required double gapLength}) {
     final Path dashedPath = Path();
     final PathMetrics pathMetrics = path.computeMetrics();
     for (final PathMetric metric in pathMetrics) {

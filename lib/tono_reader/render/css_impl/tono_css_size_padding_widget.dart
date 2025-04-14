@@ -1,10 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:voidlord/tono_reader/render/state/tono_container_provider.dart';
-import 'package:voidlord/tono_reader/render/tools/tono_css_converter.dart';
-import 'package:voidlord/tono_reader/render/tools/tono_css_height.dart';
-import 'package:voidlord/tono_reader/render/tools/tono_css_padding.dart';
-import 'package:voidlord/tono_reader/render/tools/tono_css_width.dart';
+import 'package:voidlord/tono_reader/render/css_impl/tono_css_border_bgc.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_converter.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_height.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_padding.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_width.dart';
 
 /// 实现如下css
 /// - width
@@ -69,6 +70,7 @@ class TonoCssSizePaddingWidget extends StatelessWidget {
       padding: padding,
       height: height,
       width: width,
+      decoration: fci.boxDecoration(),
       constraints: BoxConstraints(
         maxHeight: maxHeight ?? double.infinity,
         maxWidth: maxWidth ?? double.infinity,
