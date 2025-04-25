@@ -1,11 +1,6 @@
-import 'package:flutter/widgets.dart';
 import 'package:get/state_manager.dart';
 
 class TonoProgresser extends GetxController {
-  var pageController = PageController(
-    initialPage: 0,
-  );
-
   var pageIndex = 1.obs;
 
   int totalPageCount = 0;
@@ -15,4 +10,10 @@ class TonoProgresser extends GetxController {
   int xhtmlIndex = 0;
 
   List<int> pageSequence = [];
+
+  List<int> elementSequence = [];
+
+  var currentElementIndex = 0.obs;
+
+  int totalElementCount = 0;
 }

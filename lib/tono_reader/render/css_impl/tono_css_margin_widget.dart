@@ -1,29 +1,30 @@
 import 'package:flutter/cupertino.dart';
-import 'package:voidlord/tono_reader/render/state/tono_container_provider.dart';
-import 'package:voidlord/tono_reader/render/css_parse/tono_css_converter.dart';
+import 'package:voidlord/tono_reader/render/css_impl/tono_css_widget.dart';
 import 'package:voidlord/tono_reader/render/css_parse/tono_css_margin.dart';
 import 'package:voidlord/tono_reader/tool/margin.dart';
 
 /// 实现如下CSS
 /// - margin*
-class TonoCssMarginWidget extends StatelessWidget {
+class TonoCssMarginWidget extends TonoCssWidget {
   final Widget child;
-  const TonoCssMarginWidget({
+  TonoCssMarginWidget({
     super.key,
     required this.child,
   });
   @override
-  Widget build(BuildContext context) {
-    var tw = context.tonoWidget;
-    var fci = tw.css.convert();
-    var marginLeft = fci.magrinLeft;
-    var marginRight = fci.marginRight;
-    var marginTop = fci.marginTop;
-    var marginBottom = fci.matginBottom;
-    var left = marginLeft is ValuedCssMargin ? marginLeft.value : 0.0;
-    var right = marginRight is ValuedCssMargin ? marginRight.value : 0.0;
-    var top = marginTop is ValuedCssMargin ? marginTop.value : 0.0;
-    var bottom = marginBottom is ValuedCssMargin ? marginBottom.value : 0.0;
+  Widget content(BuildContext context) {
+    var left = marginLeft is ValuedCssMargin
+        ? (marginLeft as ValuedCssMargin).value
+        : 0.0;
+    var right = marginRight is ValuedCssMargin
+        ? (marginRight as ValuedCssMargin).value
+        : 0.0;
+    var top = marginTop is ValuedCssMargin
+        ? (marginTop as ValuedCssMargin).value
+        : 0.0;
+    var bottom = marginBottom is ValuedCssMargin
+        ? (marginBottom as ValuedCssMargin).value
+        : 0.0;
     if (marginLeft is KeyWordCssMargin && marginRight is KeyWordCssMargin) {
       return Center(
         child: AdaptiveMargin(

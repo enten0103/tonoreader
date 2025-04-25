@@ -2,9 +2,8 @@ import 'package:voidlord/tono_reader/render/css_parse/tono_css_converter.dart';
 import 'package:voidlord/tono_reader/tool/box_decoration.dart';
 
 extension TonoCssBackgroundSize on FlutterStyleFromCss {
-  BackgroundSize? get backgroundSize => _parseBackgroundSize();
-  BackgroundSize? _parseBackgroundSize() {
-    var cssBackgroundSize = css['background-size']?.toValue();
+  BackgroundSize? parseBackgroundSize(String? raw) {
+    var cssBackgroundSize = raw?.toValue();
     if (cssBackgroundSize == null) return null;
     if (cssBackgroundSize.contains(",")) {
       return null;
@@ -67,4 +66,3 @@ extension TonoCssBackgroundSize on FlutterStyleFromCss {
     return null;
   }
 }
-

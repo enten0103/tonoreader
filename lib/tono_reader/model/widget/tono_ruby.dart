@@ -24,7 +24,7 @@ class TonoRuby extends TonoWidget {
   TonoRuby({
     required super.css,
     required this.texts,
-  }) : super(className: "ruby");
+  }) : super(className: "ruby", display: "inline");
   final List<RubyItem> texts;
   @override
   Map<String, dynamic> toMap() {

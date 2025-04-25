@@ -34,7 +34,6 @@ class ContentView extends StatelessWidget {
             tonoProgresser.pageIndex.value = pageCount + 1;
           },
           itemCount: totalIndex,
-          controller: tonoProgresser.pageController,
           itemBuilder: (ctx, index) => SafeArea(
                 child: GestureDetector(
                     onTap: () {

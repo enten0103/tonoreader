@@ -1,11 +1,13 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:voidlord/tono_reader/render/css_impl/tono_css_widget.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_display.dart';
 import 'package:voidlord/tono_reader/render/state/tono_container_provider.dart';
 import 'package:voidlord/tono_reader/render/css_impl/tono_css_border_bgc.dart';
-import 'package:voidlord/tono_reader/render/css_parse/tono_css_converter.dart';
 import 'package:voidlord/tono_reader/render/css_parse/tono_css_height.dart';
-import 'package:voidlord/tono_reader/render/css_parse/tono_css_padding.dart';
 import 'package:voidlord/tono_reader/render/css_parse/tono_css_width.dart';
+import 'package:voidlord/tono_reader/render/state/tono_layout_provider.dart';
+import 'package:voidlord/tono_reader/tool/after_layout.dart';
 
 /// 实现如下css
 /// - width
@@ -13,91 +15,97 @@ import 'package:voidlord/tono_reader/render/css_parse/tono_css_width.dart';
 /// - max-width
 /// - max-height
 /// - padding
-class TonoCssSizePaddingWidget extends StatelessWidget {
+class TonoCssSizePaddingWidget extends TonoCssWidget {
   TonoCssSizePaddingWidget({
     super.key,
     required this.child,
   });
   final Widget child;
-  final Map<String, dynamic> _debugFillProperties = {};
   @override
-  Widget build(BuildContext context) {
-    var tonoContainer = context.tonoWidget;
-    GlobalKey key = GlobalKey();
-    tonoContainer.sizedKey = key;
-    var fci = tonoContainer.css.convert();
-
-    /// fci -> FlutterCssImpl
-    var cssWidth = fci.width;
-    var cssMaxWidth = fci.maxWidth;
-    var cssHeight = fci.height;
-    var cssMaxHeight = fci.maxHeight;
-
-    EdgeInsets padding = fci.padding;
-
+  Widget content(BuildContext context) {
     /// valued css
-    double? width;
-    double? height;
-    double? maxHeight;
-    double? maxWidth;
+    double? widthValue;
+    double? heightValue;
+    double? maxHeightValue;
+    double? maxWidthValue;
 
-    ///
-    /// debug 注册
-    _debugFillProperties['height'] = cssHeight;
-    _debugFillProperties['width'] = cssWidth;
-    _debugFillProperties['max-width'] = cssMaxWidth;
-    _debugFillProperties['max-height'] = cssMaxHeight;
-    _debugFillProperties['padding'] = padding;
-
-    if (cssMaxHeight is ValuedCssHeight) {
-      maxHeight = cssMaxHeight.value;
+    if (maxHeight is ValuedCssHeight) {
+      maxHeightValue = (maxHeight as ValuedCssHeight).value;
     }
 
-    if (cssMaxWidth is ValuedCssWidth) {
-      maxWidth = cssMaxWidth.value;
+    if (maxWidth is ValuedCssWidth) {
+      maxWidthValue = (maxWidth as ValuedCssWidth).value;
     }
 
-    if (cssWidth is ValuedCssWidth) {
-      width = cssWidth.value;
+    if (width is ValuedCssWidth) {
+      widthValue = (width as ValuedCssWidth).value;
     }
 
-    if (cssHeight is ValuedCssHeight) {
-      height = cssHeight.value;
+    if (height is ValuedCssHeight) {
+      heightValue = (height as ValuedCssHeight).value;
     }
 
-    return Container(
-      key: key,
-      padding: padding,
-      height: height,
-      width: width,
-      decoration: fci.boxDecoration(),
-      constraints: BoxConstraints(
-        maxHeight: maxHeight ?? double.infinity,
-        maxWidth: maxWidth ?? double.infinity,
-      ),
-      child: child,
-    );
+    if (width == null) {
+      if (context.tonoLayoutType == TonoLayoutType.fix &&
+          display == CssDisplay.block) {
+        widthValue = double.infinity;
+      }
+    }
+
+    var container = AfterLayout(
+        callback: (values) {
+          context.parentSize?.value = values.size;
+        },
+        child: Container(
+          padding: padding,
+          height: heightValue,
+          width: widthValue,
+          decoration: boxDecoration,
+          constraints: BoxConstraints(
+            maxHeight: maxHeightValue ?? double.infinity,
+            maxWidth: maxWidthValue ?? double.infinity,
+          ),
+          child: child,
+        ));
+    if (width is KeyWordCssWidth? &&
+        (width as KeyWordCssWidth?)?.keyWord == CssWidthKeyWords.fitContent) {
+      return TonoLayoutProvider(
+        type: TonoLayoutType.shrink,
+        child: container,
+      );
+    }
+    if (width is ValuedCssWidth) {
+      return TonoLayoutProvider(
+        type: TonoLayoutType.fix,
+        child: container,
+      );
+    }
+    return container;
   }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     properties.add(
-      DiagnosticsProperty<CssWidth>("width", _debugFillProperties['width']),
+      DiagnosticsProperty<CssWidth>("width", width),
     );
     properties.add(
-      DiagnosticsProperty<CssHeight>("height", _debugFillProperties['height']),
-    );
-    properties.add(DiagnosticsProperty<CssWidth>(
-        "max-width", _debugFillProperties["max-width"]));
-    properties.add(
-      DiagnosticsProperty<CssHeight>(
-          "max-height", _debugFillProperties['max-height']),
+      DiagnosticsProperty<CssHeight>("height", height),
     );
     properties.add(
-      DiagnosticsProperty<EdgeInsets>(
-          "padding", _debugFillProperties['padding']),
+      DiagnosticsProperty<CssWidth>("max-width", maxWidth),
     );
-
+    properties.add(
+      DiagnosticsProperty<CssHeight>("max-height", maxHeight),
+    );
+    properties.add(
+      DiagnosticsProperty<EdgeInsets>("padding", padding),
+    );
+    properties.add(
+      DiagnosticsProperty<CssDisplay>("display", display),
+    );
+    properties.add(
+      DiagnosticsProperty<String>("pdisplay", pDisplay),
+    );
     super.debugFillProperties(properties);
   }
 }

@@ -1,30 +1,113 @@
-import 'dart:ui';
-
+import 'package:flutter/widgets.dart';
 import 'package:get/get_core/get_core.dart';
 import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
 import 'package:voidlord/tono_reader/config.dart';
 import 'package:voidlord/tono_reader/model/style/tono_style.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_align_item.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_background_color.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_background_image.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_background_position.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_background_size.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_border.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_border_radius.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_box_shadow.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_display.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_font_family.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_font_weight.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_height.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_image_repet.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_justify_content.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_line_height.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_margin.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_padding.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_tansform.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_text_align.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_text_indent.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_text_shadow.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_transform_origin.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_width.dart';
+import 'package:voidlord/tono_reader/tool/box_decoration.dart';
+import 'package:voidlord/tono_reader/tool/css_tool.dart';
+import 'package:voidlord/tono_reader/tool/styled_border.dart';
 
-///
-/// 转换[TonoStyle]到flutter组件
-///
-extension TonoCssConverter on List<TonoStyle> {
-  ///
-  /// 转换实现
-  ///
-  FlutterStyleFromCss convert() {
-    return FlutterStyleFromCss(css: toMap());
-  }
+mixin FlutterCssMixin {
+  late final Map<String, dynamic> flutterStyleMap;
 
-  ///转换 [List<TonoStyle>] 为 [Map<String,String>]
-  Map<String, String> toMap() {
-    Map<String, String> result = {};
-    forEach((e) {
-      result[e.property] = e.value;
-    });
-    return result;
-  }
+  /// css [align-items] => flutter [CrossAxisAlignment]
+  CrossAxisAlignment get alignItems =>
+      flutterStyleMap["align-items"] ?? CrossAxisAlignment.start;
+
+  Color? get backgroundColor => flutterStyleMap["background-color"];
+
+  String? get backgroundImage => flutterStyleMap["background-image"];
+
+  AlignmentGeometry? get backgroundPosition =>
+      flutterStyleMap["background-position"];
+
+  BackgroundSize? get backgroundSize => flutterStyleMap["background-size"];
+
+  BorderRadius? get borderRadius => flutterStyleMap["border-radius"];
+
+  StyledBorder? get border => flutterStyleMap["border"];
+
+  BoxShadow? get boxShadow => flutterStyleMap["box-shadow"];
+
+  Color? get color => flutterStyleMap["color"];
+
+  FontWeight? get fontWeight => flutterStyleMap["font-weight"];
+
+  /// css [display] -> flutter [ CssDisplay ]
+  CssDisplay get display => flutterStyleMap["display"] ?? CssDisplay.block;
+
+  ///
+  /// css [height] -> [CssHeight]
+  CssHeight? get height => flutterStyleMap["height"];
+
+  ///
+  /// css[max-height] -> [CssHeight]
+  CssHeight? get maxHeight => flutterStyleMap["max-height"];
+
+  ImageRepeat get backgroundRepet =>
+      flutterStyleMap["background-repeat"] ?? ImageRepeat.noRepeat;
+
+  double get fontSize => flutterStyleMap["font-size"];
+
+  List<String> get fontFamily => flutterStyleMap["font-family"];
+
+  MainAxisAlignment get justifyContent =>
+      flutterStyleMap["justify-content"] ?? MainAxisAlignment.start;
+
+  double get lineHeight => flutterStyleMap["line-height"] ?? 1;
+
+  CssMargin? get marginLeft => flutterStyleMap["margin-left"];
+
+  CssMargin? get marginRight => flutterStyleMap["margin-right"];
+
+  CssMargin? get marginTop => flutterStyleMap["margin-top"];
+
+  CssMargin? get marginBottom => flutterStyleMap["margin-bottom"];
+
+  EdgeInsets? get padding => flutterStyleMap["padding"];
+
+  Matrix4? get transform => flutterStyleMap["transform"];
+
+  TextAlign get textAlign => flutterStyleMap["text-align"] ?? TextAlign.start;
+
+  int? get textIndent => flutterStyleMap['text-indent'];
+
+  Shadow? get textShadow => flutterStyleMap['text-shadow'];
+
+  Alignment get transformOrigin =>
+      flutterStyleMap["transform-origin"] ?? Alignment.center;
+
+  /// css [width] -> [CssWidth]
+  CssWidth? get width => flutterStyleMap['width'];
+
+  String? get pDisplay => flutterStyleMap['pdisplay'];
+
+  /// css [max-width] -> [CssWidth]
+  CssWidth? get maxWidth => flutterStyleMap['max-width'];
 }
 
 ///
@@ -32,29 +115,80 @@ extension TonoCssConverter on List<TonoStyle> {
 ///
 class FlutterStyleFromCss {
   /// 字体大小
-  late double em;
+  late final double em;
 
-  /// 配置
-  late TonoReaderConfig config;
-
-  /// css映射实体
-  final Map<String, String> css;
+  /// 存储 map
+  final Map<String, dynamic> flutterStyleMap = {};
 
   /// 父容器大小
-  Size? parentSize;
+  final Size? parentSize;
 
-  FlutterStyleFromCss({
-    required this.css,
+  /// container display
+  late final String? tdisplay;
+
+  /// parent display
+  late final String? pdisplay;
+
+  FlutterStyleFromCss(
+    List<TonoStyle> styleList, {
+    this.tdisplay,
+    this.parentSize,
+    required this.pdisplay,
   }) {
-    config = Get.find<TonoReaderConfig>();
+    _initFontSize(styleList);
+    _initAllStyle(styleList);
+  }
+  _initFontSize(List<TonoStyle> styleList) {
+    var config = Get.find<TonoReaderConfig>();
     var width = Get.mediaQuery.size.width;
-    em = parseUnit(css['font-size']!, width, config.fontSize);
+    var emStyle = styleList.where((e) {
+      return e.property == "font-size";
+    }).first;
+    em = parseUnit(emStyle.value, width, config.fontSize);
+    flutterStyleMap["font-size"] = em;
   }
 
-  ///
-  /// 初始化父容器大小
-  void initParentSize(Size parentSize) {
-    this.parentSize = parentSize;
+  _initAllStyle(List<TonoStyle> styleList) {
+    Map<String, String> cssMap = styleList.toMap();
+    flutterStyleMap['align-items'] = parseAlignItem(cssMap['align-items']);
+    flutterStyleMap['background-color'] =
+        parseBackgroundColor(cssMap['background-color']);
+    flutterStyleMap['background-image'] =
+        parseBackgroundImage(cssMap['background-image']);
+    flutterStyleMap['background-position'] =
+        parseBackgorundPosition(cssMap['background-position']);
+    flutterStyleMap['background-repeat'] =
+        parseBackgroundRepet(cssMap['background-repeat']);
+    flutterStyleMap['border-radius'] =
+        parseBorderRadius(cssMap['border-radius']);
+    flutterStyleMap['background-size'] =
+        parseBackgroundSize(cssMap['background-size']);
+    flutterStyleMap['box-shadow'] = parseBoxShadow(cssMap['box-shadow']);
+    flutterStyleMap['color'] = parseColor(cssMap['color']);
+    flutterStyleMap['font-weight'] = parseFontWeight(cssMap['font-weight']);
+    flutterStyleMap['font-family'] = parseFontFamily(cssMap['font-family']);
+    flutterStyleMap['display'] = parseDisplay(cssMap['display']);
+    flutterStyleMap['height'] = parseHeight(cssMap['height']);
+    flutterStyleMap['max-height'] = parseHeight(cssMap['max-height']);
+    flutterStyleMap['justify-content'] =
+        parseJustifyContent(cssMap['justify-content']);
+    flutterStyleMap['line-height'] = parseLineHeight(cssMap['line-height']);
+    flutterStyleMap['margin-left'] = parseMargin(cssMap['margin-left']);
+    flutterStyleMap['margin-right'] = parseMargin(cssMap['margin-right']);
+    flutterStyleMap['margin-top'] = parseMargin(cssMap['margin-top']);
+    flutterStyleMap['margin-bottom'] = parseMargin(cssMap['margin-bottom']);
+    flutterStyleMap['transform'] = parseTransform(cssMap['transform']);
+    flutterStyleMap['text-align'] = parseTextAlign(cssMap['text-align']);
+    flutterStyleMap['text-indent'] = parseTextIndent(cssMap['text-indent']);
+    flutterStyleMap['text-shadow'] = parseTextShadow(cssMap['text-shadow']);
+    flutterStyleMap['transform-origin'] =
+        parseTransformOrigin(cssMap['transform-origin']);
+    flutterStyleMap['width'] = parseWidth(cssMap['width']);
+    flutterStyleMap['max-width'] = parseWidth(cssMap['max-width']);
+    flutterStyleMap['padding'] = parsePadding(cssMap);
+    flutterStyleMap['border'] = parseBorder(cssMap);
+    flutterStyleMap['dispaly'] = parseDisplay(cssMap['display']);
+    flutterStyleMap['pdisplay'] = pdisplay;
   }
 
   ///
@@ -103,7 +237,8 @@ class FlutterStyleFromCss {
     }
   }
 
-  Color? parseColor(String colorStr) {
+  Color? parseColor(String? colorStr) {
+    if (colorStr == null) return null;
     final normalized = colorStr
         .replaceAll(RegExp(r'[#!important]', caseSensitive: false), '')
         .trim()

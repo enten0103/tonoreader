@@ -2,9 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'package:voidlord/tono_reader/render/css_parse/tono_css_converter.dart';
 
 extension TonoCssBackgroundPosition on FlutterStyleFromCss {
-  AlignmentGeometry? get backgroundPosition => _parseBackgorundPosition();
-  AlignmentGeometry? _parseBackgorundPosition() {
-    var cssBgp = css['background-position']?.toValue();
+  AlignmentGeometry? parseBackgorundPosition(String? raw) {
+    var cssBgp = raw?.toValue();
     if (cssBgp == null) return null;
     if (cssBgp.contains("center")) {
       if (cssBgp.contains("left")) {

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:voidlord/tono_reader/model/base/tono.dart';
 import 'package:voidlord/tono_reader/model/base/tono_type.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_container.dart';
@@ -18,6 +20,13 @@ class TonoReaderController extends GetxController {
     required this.tonoType,
   });
 
+  final ItemScrollController itemScrollController = ItemScrollController();
+  final ItemPositionsListener itemPositionsListener =
+      ItemPositionsListener.create();
+  final scrollKey = GlobalKey();
+
+  final slideKey = GlobalKey();
+
   final String id;
   final TonoType tonoType;
 
@@ -26,16 +35,22 @@ class TonoReaderController extends GetxController {
   late TonoProvider tonoDataProvider = Get.find<TonoProvider>();
 
   void changeChapter(String id) async {
-    tonoFlager.state.value = LoadingState.loading;
-    tonoFlager.state.value = LoadingState.success;
+    var index = tonoDataProvider.xhtmls.indexOf(id);
+    var resultIndex = 0;
+    for (var i = 0; i < index; i++) {
+      resultIndex += tonoProgresser.elementSequence[i];
+    }
+    itemScrollController.jumpTo(
+      index: resultIndex,
+    );
   }
 
-  void siblingChapter(TapDownDetails details) async {
-    tonoFlager.state.value = LoadingState.loading;
-    tonoFlager.state.value = LoadingState.success;
-  }
+  void siblingChapter(TapDownDetails details) async {}
 
-  void onBodyClick() {}
+  void onBodyClick() {
+    tonoFlager.isStateVisible.value =
+        !tonoFlager.isStateVisible.value; // 点击切换状态
+  }
 
   void openNavDrawer() {
     NavDarwer.openNavDrawer();
@@ -70,6 +85,9 @@ class TonoReaderController extends GetxController {
 
   @override
   void onInit() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky,
+        overlays: []);
+
     init();
     super.onInit();
   }
@@ -79,4 +97,9 @@ class TonoReaderController extends GetxController {
   }
 
   _initFromNet() {}
+  @override
+  void onClose() {
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    super.onClose();
+  }
 }

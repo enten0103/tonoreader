@@ -25,6 +25,16 @@ extension TonoSelectorMacher on TonoParser {
       result.add(TonoStyle(priority: -100, value: "flex", property: "display"));
     }
 
+    if (element.localName == "table") {
+      result.add(
+          TonoStyle(priority: -100, value: "fit-content", property: "width"));
+    }
+
+    if (element.localName == "tbody") {
+      result.add(
+          TonoStyle(priority: -100, value: "fit-content", property: "width"));
+    }
+
     /// 解析内联样式
     if (style == null) return result;
     var splitedStyle = style.split(';');

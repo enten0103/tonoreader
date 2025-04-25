@@ -4,8 +4,6 @@ import 'package:get/instance_manager.dart';
 import 'package:path/path.dart' as p;
 import 'package:voidlord/tono_reader/config.dart';
 import 'package:voidlord/tono_reader/model/base/tono.dart';
-import 'package:voidlord/tono_reader/render/state/tono_container_state.dart';
-import 'package:voidlord/tono_reader/render/state/tono_css_provider.dart';
 import 'package:voidlord/tono_reader/state/tono_assets_provider.dart';
 import 'package:voidlord/tono_reader/state/tono_data_provider.dart';
 import 'package:voidlord/tono_reader/state/tono_prepager.dart';
@@ -28,9 +26,7 @@ class TonoInitializer {
   }
 
   static _loadState() {
-    Get.put(TonoCssProvider());
     Get.put(TonoAssetsProvider());
-    Get.put(TonoContainerState());
     Get.put(TonoProgresser());
     Get.put(TonoPrepager());
   }

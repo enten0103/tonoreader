@@ -43,22 +43,12 @@ class KeyWordCssWidth extends CssWidth {
 ///
 /// css [width] [max-width] 实现
 extension TonoCssWidth on FlutterStyleFromCss {
-  ///
-  /// css [width] -> [CssWidth]
-  CssWidth? get width => _parseWidth(css['width']);
-
-  /// css [max-width] -> [CssWidth]
-  CssWidth? get maxWidth => _parseWidth(css['max-width']);
-  CssWidth? _parseWidth(String? raw) {
+  CssWidth? parseWidth(String? raw) {
     if (raw == null) {
-      if (css['display'] != "flex" && css['display'] != "inline") {
-        return ValuedCssWidth(value: double.infinity);
-      }
       return null;
     }
 
     var widthValue = raw.toValue();
-
     if (widthValue == "auto" ||
         widthValue == "inherit" ||
         widthValue == "initial" ||
@@ -73,7 +63,7 @@ extension TonoCssWidth on FlutterStyleFromCss {
     if (widthValue == "max-content" ||
         widthValue == "min-content" ||
         widthValue.contains("fit-content")) {
-      throw UnimplementedWidthKeyWordError(message: "keyWord:${css['width']}");
+      throw UnimplementedWidthKeyWordError(message: "keyWord:$raw");
     }
 
     return ValuedCssWidth(value: parseUnit(widthValue, parentSize?.width, em));

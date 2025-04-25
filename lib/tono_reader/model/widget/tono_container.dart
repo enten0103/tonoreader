@@ -5,12 +5,11 @@ class TonoContainer extends TonoWidget {
   TonoContainer({
     required super.className,
     required super.css,
-    required this.display,
+    required super.display,
     required this.children,
   });
 
   ///block/inline
-  String display;
 
   ///子元素
   List<TonoWidget> children;

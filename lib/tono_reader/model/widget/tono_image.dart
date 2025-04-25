@@ -5,7 +5,7 @@ class TonoImage extends TonoWidget {
   TonoImage({
     required this.url,
     required super.css,
-  }) : super(className: "img");
+  }) : super(className: "img", display: "inline");
   final String url;
 
   static TonoImage fromMap(Map<String, dynamic> map) {

@@ -1,77 +1,73 @@
-import 'dart:typed_data';
-
-import 'package:path/path.dart' as p;
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
+import 'package:path/path.dart' as p;
 import 'package:voidlord/tono_reader/model/widget/tono_image.dart';
-import 'package:voidlord/tono_reader/render/state/tono_container_state.dart';
-import 'package:voidlord/tono_reader/render/state/tono_css_provider.dart';
-import 'package:voidlord/tono_reader/render/css_impl/tono_css_size_padding_widget.dart';
-import 'package:voidlord/tono_reader/render/widget/inline/tono_inline_render.dart';
+import 'package:voidlord/tono_reader/render/css_impl/tono_css_widget.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_converter.dart';
+import 'package:voidlord/tono_reader/render/css_parse/tono_css_height.dart';
+import 'package:voidlord/tono_reader/render/state/tono_container_provider.dart';
+import 'package:voidlord/tono_reader/render/widget/tono_inline_container_widget.dart';
 import 'package:voidlord/tono_reader/state/tono_assets_provider.dart';
-import 'package:voidlord/tono_reader/tool/css_tool.dart';
+import 'package:voidlord/tono_reader/tool/async_memory_image.dart';
 
-extension TonoImageRender on TonoInlineRender {
+extension TonoImageRender on TonoInlineContainerWidget {
   InlineSpan renderImage(TonoImage tonoImage) {
-    var assetsProvider = Get.find<TonoAssetsProvider>();
-    Get.find<TonoCssProvider>().updateCss(tonoImage.css);
-    Get.find<TonoContainerState>().container = tonoImage;
+    var fcm = FlutterStyleFromCss(
+      tonoImage.css,
+      pdisplay: tonoImage.parent?.display,
+      tdisplay: "inline",
+      parentSize: Size(Get.mediaQuery.size.width, Get.mediaQuery.size.height),
+    ).flutterStyleMap;
 
-    final css = tonoImage.css.toMap();
-    final em = tonoImage.css.getFontSize();
-
-    final width =
-        css['width'] != null && (!(css['width']?.contains("auto") ?? true))
-            ? parseUnit(css['width']!, Get.mediaQuery.size.width, em)
-            : null;
-    final height =
-        css['height'] != null && (!(css['height']?.contains("auto") ?? true))
-            ? parseUnit(css['height']!, Get.mediaQuery.size.height, em)
-            : null;
-    final assetId = p.basenameWithoutExtension(tonoImage.url);
     return WidgetSpan(
-      baseline: TextBaseline.alphabetic,
-      alignment: PlaceholderAlignment.aboveBaseline,
-      child: FutureBuilder<Uint8List>(
-        key: Key("${css['width']}@$hashCode"),
-        future: assetsProvider.getAssetsById(assetId),
-        builder: (context, snapshot) {
-          final effectiveWidth = width;
-          if (snapshot.connectionState == ConnectionState.done) {
-            if (snapshot.hasError) {
-              return Container(
-                width: effectiveWidth,
-                color: Colors.grey,
-                child: const Icon(Icons.error),
-              );
-            }
-            return TonoCssSizePaddingWidget(
-              child: Image.memory(
-                snapshot.data!,
-                height: height,
-                width: effectiveWidth,
-                fit: BoxFit.contain,
-              ),
-            );
-          } else {
-            return SizedBox(
-              width: effectiveWidth,
-              child: const Center(child: CircularProgressIndicator()),
-            );
-          }
-        },
-      ),
-    );
+        baseline: TextBaseline.alphabetic,
+        alignment: PlaceholderAlignment.aboveBaseline,
+        child: TonoContainerProvider(
+            fcm: fcm,
+            data: tonoImage,
+            key: ValueKey(tonoImage.hashCode),
+            parentSize: Rx(Get.mediaQuery.size),
+            child: TonoImageWidget(
+                key: ValueKey("${tonoImage.hashCode}/1"),
+                tonoImage: tonoImage)));
+  }
+}
+
+class TonoImageWidget extends TonoCssWidget {
+  TonoImageWidget({super.key, required this.tonoImage});
+
+  final TonoImage tonoImage;
+
+  @override
+  Widget content(BuildContext context) {
+    var assetsProvider = Get.find<TonoAssetsProvider>();
+    final assetId = p.basenameWithoutExtension(tonoImage.url);
+    return GestureDetector(
+        onLongPress: () {},
+        child: Image(
+          key: ValueKey(tonoImage.hashCode),
+          gaplessPlayback: true,
+          image:
+              AsyncMemoryImage(assetsProvider.getAssetsById(assetId), assetId),
+          height: height is ValuedCssHeight
+              ? (height as ValuedCssHeight).value
+              : null,
+          width: width is ValuedCssHeight
+              ? (width as ValuedCssHeight).value
+              : null,
+          fit: BoxFit.contain,
+        ));
   }
 
-  double? parseMaxHeight(String? cssMaxHeight, double em) {
-    if (cssMaxHeight == null) return null;
-    cssMaxHeight = cssMaxHeight.replaceAll("!important", "");
-    if (cssMaxHeight.endsWith("%")) {
-      var value = double.parse(cssMaxHeight.replaceAll("%", ""));
-      return Get.mediaQuery.size.height * value / 100;
-    } else {
-      return parseUnit(cssMaxHeight, Get.mediaQuery.size.width, em);
-    }
+  @override
+  void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    properties.add(
+      DiagnosticsProperty("height", height),
+    );
+    properties.add(
+      DiagnosticsProperty("width", width),
+    );
+    super.debugFillProperties(properties);
   }
 }

@@ -41,21 +41,10 @@ class KeyWordCssHeight extends CssHeight {
 }
 
 ///
-///css [height] css [max-width] 实现
+///css [height] css [max-height] 实现
 extension TonoCssHeight on FlutterStyleFromCss {
-  ///
-  /// css [height] -> [CssHeight]
-  CssHeight? get height => _parseHeight(css['height']);
-
-  ///
-  /// css[max-height] -> [CssHeight]
-  CssHeight? get maxHeight => _parseHeight(css['max-height']);
-
-  CssHeight? _parseHeight(String? raw) {
+  CssHeight? parseHeight(String? raw) {
     if (raw == null) {
-      if (css['display'] == "flex") {
-        return ValuedCssHeight(value: double.infinity);
-      }
       return null;
     }
     var heightValue = raw.toValue();
@@ -74,11 +63,10 @@ extension TonoCssHeight on FlutterStyleFromCss {
     if (heightValue == "max-content" ||
         heightValue == "min-content" ||
         heightValue.contains("fit-content")) {
-      throw UnimplementedHeightKeyWordError(
-          message: "keyWord:${css['height']}");
+      throw UnimplementedHeightKeyWordError(message: "keyWord:$raw");
     }
 
     return ValuedCssHeight(
-        value: parseUnit(heightValue, parentSize?.width, em));
+        value: parseUnit(heightValue, parentSize?.height, em));
   }
 }

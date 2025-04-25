@@ -292,7 +292,7 @@ extension TonoStyleParser on TonoParser {
     }
 
     // 设置默认值
-    widthVal ??= '2px';
+    widthVal ??= '0';
     styleVal ??= 'none';
     colorVal ??= '#000';
 

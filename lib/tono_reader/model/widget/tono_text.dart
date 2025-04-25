@@ -5,7 +5,7 @@ class TonoText extends TonoWidget {
   TonoText({
     required this.text,
     required super.css,
-  }) : super(className: "text_node");
+  }) : super(className: "text_node", display: "inline");
 
   final String text;
 

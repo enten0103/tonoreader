@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:get/instance_manager.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_container.dart';
-import 'package:voidlord/tono_reader/render/state/tono_container_state.dart';
+import 'package:voidlord/tono_reader/render/state/tono_container_provider.dart';
 import 'package:voidlord/tono_reader/tool/css_tool.dart';
 
 // Margin 组件
@@ -113,8 +112,7 @@ class AdaptiveMargin extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    var containerState = Get.find<TonoContainerState>();
-    var container = containerState.container;
+    var container = context.tonoWidget;
     var parent = container.parent;
     var mt = margin.top;
     if (parent != null) {

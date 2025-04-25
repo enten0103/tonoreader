@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:voidlord/tono_reader/render/css_parse/tono_css_converter.dart';
 
 extension TonoCssBoxShadow on FlutterStyleFromCss {
-  BoxShadow? get boxShadow => _parseBoxShadow();
-  BoxShadow? _parseBoxShadow() {
-    var cssBoxShadow = css['box-shadow']?.toValue();
+  BoxShadow? parseBoxShadow(String? raw) {
+    var cssBoxShadow = raw?.toValue();
     if (cssBoxShadow == null) return null;
     var values = cssBoxShadow.split(" ");
     if (values.length == 4) {

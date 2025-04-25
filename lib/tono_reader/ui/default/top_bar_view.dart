@@ -11,10 +11,9 @@ class TopBarView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: kToolbarHeight +
           MediaQuery.of(context).padding.top, // AppBar 高度 + 状态栏高度
-      color: Get.theme.colorScheme.surfaceContainer,
       child: Padding(
         padding: EdgeInsets.only(top: MediaQuery.of(context).padding.top),
         child: Row(

@@ -1,63 +1,59 @@
 import 'package:flutter/material.dart';
+import 'package:get/state_manager.dart';
+import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:voidlord/tono_reader/model/style/tono_style.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_container.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_text.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_widget.dart';
-import 'package:voidlord/tono_reader/render/state/tono_container_provider.dart';
-import 'package:voidlord/tono_reader/render/css_impl/tono_css_size_padding_widget.dart';
-import 'package:voidlord/tono_reader/tool/span_table.dart';
 import 'package:voidlord/tono_reader/tool/styled_border.dart';
 
 class UserPage extends StatelessWidget {
   const UserPage({super.key});
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Container(
-          width: 300,
-          height: 600,
-          decoration: BoxDecoration(
-            border: StyledBorder(
-                top: StyledBorderSide(
-                    width: 2,
-                    color: Colors.blue,
-                    borderStyle: BorderCustomStyle.dashed)),
-          ),
-          child: SpanTable(data: [
-            [
-              SpanCell(child: Text("Person")),
-              SpanCell(child: Text("Most interest in")),
-              SpanCell(child: Text("Age")),
-            ],
-            [
-              SpanCell(rowSpan: 2, child: Text("Chris")),
-              SpanCell(child: Text("22")),
-            ],
-            [
-              SpanCell(child: Text("Sarah")),
-              SpanCell(child: Text("JavaScript frameworks")),
-              SpanCell(child: Text("29")),
-            ],
-            [
-              SpanCell(
-                colSpan: 2,
-                child: Text(
-                  "123",
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              SpanCell(child: Text("33")),
-            ]
-          ]),
-        ),
-      ),
-    );
+    var scale = 1.1.obs;
+    return SafeArea(
+        child: Center(
+            child: Container(
+                decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    border: StyledBorder(
+                        top: StyledBorderSide(color: Colors.red),
+                        right: StyledBorderSide(color: Colors.green),
+                        left: StyledBorderSide(color: Colors.yellow),
+                        bottom: StyledBorderSide(color: Colors.blue))),
+                child: SizedBox(
+                  width: 200,
+                  height: 200,
+                  child: Obx(
+                    () => AnimatedScale(
+                        scale: scale.value,
+                        duration: Duration(milliseconds: 500),
+                        child: ElevatedButton(
+                            onPressed: () {
+                              scale.value += 1;
+                            },
+                            child: ScrollablePositionedList.builder(
+                                itemCount: 100,
+                                itemBuilder: (_, index) {
+                                  print(index);
+                                  return Text("1234567890$index");
+                                }))),
+                  ),
+                ))));
+  }
+}
+
+class TestWidget5 extends StatelessWidget {
+  const TestWidget5({super.key});
+  @override
+  Widget build(BuildContext context) {
+    throw UnimplementedError();
   }
 }
 
 class TestWidget4 extends StatelessWidget {
-  const TestWidget4({required super.key});
+  const TestWidget4({super.key});
   @override
   Widget build(BuildContext context) {
     throw UnimplementedError();
@@ -70,24 +66,8 @@ class TestWidget1 extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
-        child: Center(
-            child: Container(
-      width: 300,
-      height: 300,
-      color: Colors.blue,
-      child: Column(children: [
-        TonoContainerProvider(
-            data: TestTonoContainer.tonoWidget1(),
-            child: TonoCssSizePaddingWidget(
-                child: Column(
-              children: [
-                TonoContainerProvider(
-                    data: TestTonoContainer.tonoWidget2(),
-                    child: TonoCssSizePaddingWidget(child: Text("123")))
-              ],
-            ))),
-      ]),
-    )));
+      child: Text("123"),
+    );
   }
 }
 

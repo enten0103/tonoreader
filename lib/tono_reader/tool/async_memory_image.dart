@@ -6,17 +6,11 @@ import 'package:flutter/services.dart';
 
 class AsyncMemoryImage extends ImageProvider<AsyncMemoryImage> {
   final Future<Uint8List> dataFuture;
-  final String? cacheKey;
+  final String cacheKey;
 
-  AsyncMemoryImage(this.dataFuture, {this.cacheKey});
+  AsyncMemoryImage(this.dataFuture, this.cacheKey);
 
   static final Map<String, Uint8List> _imageCache = {};
-  static final Map<String, Future<Uint8List>> _pendingRequests = {};
-
-  /// 清除指定缓存
-  static void evictFromCache(String cacheKey) {
-    _imageCache.remove(cacheKey);
-  }
 
   /// 清除所有缓存
   static void clearCache() {
@@ -35,22 +29,9 @@ class AsyncMemoryImage extends ImageProvider<AsyncMemoryImage> {
   ) {
     Future<Codec> codecFuture;
 
-    final cacheKey = key.cacheKey;
-    if (cacheKey != null) {
-      if (_imageCache.containsKey(cacheKey)) {
-        // 从缓存中直接加载
-        final cachedData = _imageCache[cacheKey]!;
-        codecFuture = _decodeData(cachedData, decode);
-      } else {
-        // 处理并发请求
-        codecFuture = _handlePendingRequest(key, decode, cacheKey);
-      }
-    } else {
-      // 无缓存模式
-      codecFuture = key.dataFuture.then<Codec>(
-        (data) => _decodeData(data, decode),
-      );
-    }
+    codecFuture = key.dataFuture.then<Codec>(
+      (data) => _decodeData(data, decode),
+    );
 
     return MultiFrameImageStreamCompleter(
       codec: codecFuture,
@@ -58,27 +39,8 @@ class AsyncMemoryImage extends ImageProvider<AsyncMemoryImage> {
       debugLabel: 'AsyncMemoryImage($cacheKey)',
       informationCollector: () => <DiagnosticsNode>[
         DiagnosticsProperty<ImageProvider>('Image provider', this),
-        if (cacheKey != null)
-          DiagnosticsProperty<String>('Cache key', cacheKey),
+        DiagnosticsProperty<String>('Cache key', cacheKey),
       ],
-    );
-  }
-
-  Future<Codec> _handlePendingRequest(
-    AsyncMemoryImage key,
-    ImageDecoderCallback decode,
-    String cacheKey,
-  ) {
-    if (!_pendingRequests.containsKey(cacheKey)) {
-      _pendingRequests[cacheKey] = key.dataFuture.then((data) {
-        _imageCache[cacheKey] = data;
-        _pendingRequests.remove(cacheKey);
-        return data;
-      });
-    }
-
-    return _pendingRequests[cacheKey]!.then<Codec>(
-      (data) => _decodeData(data, decode),
     );
   }
 
@@ -88,5 +50,17 @@ class AsyncMemoryImage extends ImageProvider<AsyncMemoryImage> {
   ) async {
     final buffer = await ImmutableBuffer.fromUint8List(data);
     return decode(buffer);
+  }
+
+  @override
+  int get hashCode => cacheKey.hashCode;
+
+  @override
+  String toString() => '${objectRuntimeType(this, 'AsyncMemoryImage')}'
+      '("$cacheKey")';
+
+  @override
+  bool operator ==(Object other) {
+    return hashCode == other.hashCode;
   }
 }

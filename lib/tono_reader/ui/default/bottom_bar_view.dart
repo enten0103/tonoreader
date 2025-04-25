@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
 
 class BottomBarView extends StatelessWidget {
   const BottomBarView({
@@ -11,16 +10,20 @@ class BottomBarView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       height: 80,
-      color: Get.theme.colorScheme.surfaceContainer,
-      child: Column(
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
+          SizedBox(),
           IconButton(
               onPressed: () {
                 onMenuBtnPress();
               },
-              icon: Icon(Icons.menu))
+              icon: Icon(Icons.menu)),
+          IconButton(onPressed: () {}, icon: Icon(Icons.text_format)),
+          IconButton(onPressed: () {}, icon: Icon(Icons.star_outline)),
+          IconButton(onPressed: () {}, icon: Icon(Icons.light_mode_outlined)),
         ],
       ),
     );

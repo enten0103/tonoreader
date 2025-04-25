@@ -9,12 +9,13 @@ abstract class TonoWidget {
   TonoWidget({
     required this.className,
     required this.css,
+    required this.display,
     this.parent,
   });
   TonoWidget? parent;
   List<TonoStyle> css;
   String className;
-
+  String? display;
   GlobalKey? sizedKey;
   Map<String, dynamic> extra = {};
 
