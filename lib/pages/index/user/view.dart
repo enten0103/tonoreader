@@ -36,7 +36,6 @@ class UserPage extends StatelessWidget {
                             child: ScrollablePositionedList.builder(
                                 itemCount: 100,
                                 itemBuilder: (_, index) {
-                                  print(index);
                                   return Text("1234567890$index");
                                 }))),
                   ),

@@ -13,21 +13,18 @@ class TonoInlineContainerWidget extends TonoCssWidget {
   TonoInlineContainerWidget({
     super.key,
     required this.inlineWidgets,
-    this.indented = false,
   });
 
   final List<TonoWidget> inlineWidgets;
-  final bool indented;
   @override
   Widget content(BuildContext context) {
-    bool currentIndented = indented;
     List<InlineSpan> spans = [];
     for (final widget in inlineWidgets) {
       if (widget is TonoText) {
         final result = renderText(context, widget);
         spans.add(result);
       } else if (widget is TonoContainer) {
-        spans.add(renderContainer(widget, currentIndented));
+        spans.add(renderContainer(widget));
       } else if (widget is TonoImage) {
         spans.add(renderImage(widget));
       } else {

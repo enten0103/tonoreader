@@ -35,6 +35,9 @@ class TonoCssSizePaddingWidget extends TonoCssWidget {
 
     if (maxWidth is ValuedCssWidth) {
       maxWidthValue = (maxWidth as ValuedCssWidth).value;
+      if (maxWidthValue <= 0) {
+        maxWidthValue = 0;
+      }
     }
 
     if (width is ValuedCssWidth) {

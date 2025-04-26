@@ -6,7 +6,6 @@ import 'package:voidlord/tono_reader/render/widget/tono_inline_container_widget.
 extension TonoContainerRender on TonoInlineContainerWidget {
   InlineSpan renderContainer(
     TonoContainer inlineWidget,
-    bool currentChildIndented,
   ) {
     return WidgetSpan(
       baseline: TextBaseline.alphabetic,

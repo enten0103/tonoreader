@@ -5,7 +5,8 @@ import 'package:voidlord/tono_reader/model/widget/tono_container.dart';
 import 'package:voidlord/tono_reader/render/css_impl/tono_css_display_widget.dart';
 import 'package:voidlord/tono_reader/render/css_parse/tono_css_converter.dart';
 import 'package:voidlord/tono_reader/render/state/tono_container_provider.dart';
-import 'package:voidlord/tono_reader/render/state/tono_container_state.dart';
+import 'package:voidlord/tono_reader/render/state/tono_parent_size_cache.dart';
+import 'package:voidlord/tono_reader/tool/tono_container_tool.dart';
 import 'package:voidlord/tono_reader/render/css_impl/tono_css_margin_widget.dart';
 import 'package:voidlord/tono_reader/render/css_impl/tono_css_size_padding_widget.dart';
 import 'package:voidlord/tono_reader/render/css_impl/tono_css_transform_widget.dart';
@@ -21,12 +22,14 @@ class TonoContainerWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var children = tonoContainer.genChildren();
+    var cache = Get.find<TonoParentSizeCache>();
     try {
       var fcm = FlutterStyleFromCss(
         tonoContainer.css,
         pdisplay: tonoContainer.parent?.display,
         tdisplay: tonoContainer.display,
-        parentSize: context.parentSize?.value,
+        parentSize:
+            cache.getSize(tonoContainer.hashCode) ?? context.parentSize?.value,
       ).flutterStyleMap;
       return TonoContainerProvider(
         fcm: fcm,
@@ -44,16 +47,17 @@ class TonoContainerWidget extends StatelessWidget {
         if (parentSize?.value == null) {
           return SizedBox.expand();
         } else {
+          cache.setSize(tonoContainer.hashCode, parentSize!.value!);
           var fcm = FlutterStyleFromCss(
             tonoContainer.css,
             pdisplay: tonoContainer.parent?.display,
             tdisplay: tonoContainer.display,
-            parentSize: parentSize?.value,
+            parentSize: parentSize.value,
           ).flutterStyleMap;
 
           return TonoContainerProvider(
             fcm: fcm,
-            parentSize: Rx(parentSize!.value),
+            parentSize: Rx(parentSize.value),
             data: tonoContainer,
             child: TonoCssTransformWidget(
                 child: TonoCssMarginWidget(

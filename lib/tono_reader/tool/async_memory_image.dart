@@ -3,6 +3,8 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/services.dart';
+import 'package:get/instance_manager.dart';
+import 'package:voidlord/tono_reader/state/tono_data_provider.dart';
 
 class AsyncMemoryImage extends ImageProvider<AsyncMemoryImage> {
   final Future<Uint8List> dataFuture;
@@ -53,7 +55,8 @@ class AsyncMemoryImage extends ImageProvider<AsyncMemoryImage> {
   }
 
   @override
-  int get hashCode => cacheKey.hashCode;
+  int get hashCode =>
+      "$cacheKey${Get.find<TonoProvider>().fontPrefix}".hashCode;
 
   @override
   String toString() => '${objectRuntimeType(this, 'AsyncMemoryImage')}'

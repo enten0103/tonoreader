@@ -66,6 +66,11 @@ extension TonoCssWidth on FlutterStyleFromCss {
       throw UnimplementedWidthKeyWordError(message: "keyWord:$raw");
     }
 
-    return ValuedCssWidth(value: parseUnit(widthValue, parentSize?.width, em));
+    var result =
+        ValuedCssWidth(value: parseUnit(widthValue, parentSize?.width, em));
+    if (result.value <= 0) {
+      result = ValuedCssWidth(value: 0);
+    }
+    return result;
   }
 }

@@ -35,6 +35,7 @@ extension ContainerParser on TonoParser {
         var element = childrenNode as Element;
         if (element.localName == "head" ||
             element.localName == 'noscript' ||
+            element.localName == 'nav' ||
             element.localName == 'aside') {
           continue;
         }

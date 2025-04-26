@@ -36,8 +36,12 @@ extension TonoTextRender on TonoInlineContainerWidget {
         : TextSpan(children: [
             WidgetSpan(
                 child: SizedBox(
-              width: (fontSize * (textIndent ?? 0)),
-            )),
+                    width: (fontSize *
+                        (textIndent == null
+                            ? 0
+                            : textIndent! < 0
+                                ? 0
+                                : textIndent!)))),
             TextSpan(text: text, style: ts)
           ]);
   }

@@ -32,7 +32,9 @@ class TonoCssDisplayWidget extends TonoCssWidget {
             children: children,
           )),
       CssDisplay.block => ReversedColumn(
-          crossAxisAlignment: alignItems,
+          crossAxisAlignment: context.tonoLayoutType == TonoLayoutType.fix
+              ? CrossAxisAlignment.stretch
+              : alignItems,
           mainAxisAlignment: justifyContent,
           children: children,
         ),

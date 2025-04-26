@@ -11,6 +11,7 @@ import 'package:voidlord/tono_reader/render/state/tono_container_provider.dart';
 import 'package:voidlord/tono_reader/render/css_impl/tono_css_margin_widget.dart';
 import 'package:voidlord/tono_reader/render/css_impl/tono_css_size_padding_widget.dart';
 import 'package:voidlord/tono_reader/render/state/tono_layout_provider.dart';
+import 'package:voidlord/tono_reader/render/state/tono_parent_size_cache.dart';
 import 'package:voidlord/tono_reader/render/widget/tono_container_widget.dart';
 import 'package:voidlord/tono_reader/state/tono_data_provider.dart';
 import 'package:voidlord/tono_reader/state/tono_progresser.dart';
@@ -93,6 +94,7 @@ class TonoSingleElementWidget extends StatelessWidget {
   final Widget child;
   @override
   Widget build(BuildContext context) {
+    var cache = Get.find<TonoParentSizeCache>();
     try {
       var fcm = FlutterStyleFromCss(
         element.css,
@@ -100,7 +102,7 @@ class TonoSingleElementWidget extends StatelessWidget {
         tdisplay: element.display,
         parentSize: element.className == "html"
             ? genContainerSize()
-            : context.parentSize?.value,
+            : cache.getSize(element.hashCode) ?? context.parentSize?.value,
       ).flutterStyleMap;
       return TonoContainerProvider(
         fcm: fcm,
@@ -117,16 +119,17 @@ class TonoSingleElementWidget extends StatelessWidget {
         if (parentSize?.value == null) {
           return SizedBox.expand();
         } else {
+          cache.setSize(element.hashCode, parentSize!.value!);
           var fcm = FlutterStyleFromCss(
             pdisplay: element.parent?.display,
             element.css,
             tdisplay: element.display,
-            parentSize: parentSize?.value,
+            parentSize: parentSize.value,
           ).flutterStyleMap;
 
           return TonoContainerProvider(
             fcm: fcm,
-            parentSize: Rx(parentSize!.value),
+            parentSize: Rx(parentSize.value),
             data: element,
             child: TonoCssTransformWidget(
                 child: TonoCssMarginWidget(

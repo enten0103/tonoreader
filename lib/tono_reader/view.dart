@@ -4,6 +4,7 @@ import 'package:voidlord/tono_reader/controller.dart';
 import 'package:voidlord/tono_reader/model/base/tono_type.dart';
 import 'package:voidlord/tono_reader/state/tono_data_provider.dart';
 import 'package:voidlord/tono_reader/state/tono_flager.dart';
+import 'package:voidlord/tono_reader/state/tono_progresser.dart';
 import 'package:voidlord/tono_reader/ui/default/bottom_bar_view.dart';
 import 'package:voidlord/tono_reader/ui/default/side_bar_view.dart';
 import 'package:voidlord/tono_reader/ui/default/slide_content_view.dart';
@@ -24,6 +25,7 @@ class TonoReader extends StatelessWidget {
     var controller = Get.put(TonoReaderController(id: id, tonoType: tonoType));
     var flager = Get.put(TonoFlager());
     var dataProvoder = Get.put(TonoProvider());
+    Get.put(TonoProgresser());
     return Scaffold(
       body: Stack(
         children: [

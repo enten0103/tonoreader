@@ -3,6 +3,7 @@ import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 import 'package:path/path.dart' as p;
 import 'package:voidlord/tono_reader/model/widget/tono_image.dart';
+import 'package:voidlord/tono_reader/render/css_impl/tono_css_size_padding_widget.dart';
 import 'package:voidlord/tono_reader/render/css_impl/tono_css_widget.dart';
 import 'package:voidlord/tono_reader/render/css_parse/tono_css_converter.dart';
 import 'package:voidlord/tono_reader/render/css_parse/tono_css_height.dart';
@@ -28,9 +29,10 @@ extension TonoImageRender on TonoInlineContainerWidget {
             data: tonoImage,
             key: ValueKey(tonoImage.hashCode),
             parentSize: Rx(Get.mediaQuery.size),
-            child: TonoImageWidget(
-                key: ValueKey("${tonoImage.hashCode}/1"),
-                tonoImage: tonoImage)));
+            child: TonoCssSizePaddingWidget(
+                child: TonoImageWidget(
+                    key: ValueKey("${tonoImage.hashCode}/1"),
+                    tonoImage: tonoImage))));
   }
 }
 
