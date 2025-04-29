@@ -23,6 +23,6 @@ class Setting {
   ///设置图片缓存
   static void setImageCache() {
     PaintingBinding.instance.imageCache.maximumSize = 1000000;
-    PaintingBinding.instance.imageCache.maximumSizeBytes = 300 << 20;
+    PaintingBinding.instance.imageCache.maximumSizeBytes = 500 << 20;
   }
 }

@@ -34,8 +34,6 @@ class Tono {
     };
   }
 
-  Future save() async {}
-
   static Future<Tono> fromMap(Map<String, dynamic> map) async {
     return Tono(
       bookInfo: TonoBookInfo.fromMap(map['bookInfo'] as Map<String, dynamic>),

@@ -7,25 +7,25 @@ import 'package:voidlord/tono_reader/render/widget/tono_inline_container_widget.
 
 extension TonoTextRender on TonoInlineContainerWidget {
   InlineSpan renderText(
-    BuildContext context,
     TonoText tonoText,
+    BuildContext context,
   ) {
     final config = Get.find<TonoReaderConfig>();
+
     TextStyle ts = TextStyle(
       shadows: textShadow == null ? [] : [textShadow!],
       fontSize: fontSize,
       fontFamily: fontFamily.isNotEmpty ? fontFamily[0] : null,
-      textBaseline: TextBaseline.alphabetic,
       fontFamilyFallback: fontFamily,
       height: lineHeight * config.lineSpacing,
       color: color,
       fontWeight: fontWeight,
     );
 
-    bool indented = context.indented;
     String text = tonoText.text;
 
-    if (indented) {
+    bool indented = context.indented;
+    if (!indented) {
       context.indented = true;
     } else if (tonoText.text == "\n") {
       context.indented = false;

@@ -35,7 +35,7 @@ class TonoInlineStateProvider extends InheritedWidget {
   }
 }
 
-extension ContainerGetter on BuildContext {
+extension InlineContainerWidget on BuildContext {
   bool get indented => TonoInlineStateProvider.of(this).state.indented;
   set indented(bool value) =>
       TonoInlineStateProvider.of(this).state.indented = value;

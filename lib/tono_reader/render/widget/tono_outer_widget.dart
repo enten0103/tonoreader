@@ -10,11 +10,15 @@ import 'package:voidlord/tono_reader/render/css_parse/tono_css_converter.dart';
 import 'package:voidlord/tono_reader/render/state/tono_container_provider.dart';
 import 'package:voidlord/tono_reader/render/css_impl/tono_css_margin_widget.dart';
 import 'package:voidlord/tono_reader/render/css_impl/tono_css_size_padding_widget.dart';
+import 'package:voidlord/tono_reader/render/state/tono_inline_state_provider.dart';
+import 'package:voidlord/tono_reader/render/state/tono_interaction_provider.dart';
 import 'package:voidlord/tono_reader/render/state/tono_layout_provider.dart';
+import 'package:voidlord/tono_reader/render/state/tono_location_provider.dart';
 import 'package:voidlord/tono_reader/render/state/tono_parent_size_cache.dart';
 import 'package:voidlord/tono_reader/render/widget/tono_container_widget.dart';
 import 'package:voidlord/tono_reader/state/tono_data_provider.dart';
 import 'package:voidlord/tono_reader/state/tono_progresser.dart';
+import 'package:voidlord/tono_reader/state/tono_user_data_provider.dart';
 import 'package:voidlord/tono_reader/ui/default/op_dialog_view.dart';
 
 ///
@@ -43,43 +47,70 @@ class TonoOuterWidget extends StatelessWidget {
     var provider = Get.find<TonoProvider>()..initSliderProgressor();
     var progressor = Get.find<TonoProgresser>();
     var controller = Get.find<TonoReaderController>();
+    var userData = Get.find<TonoUserDataProvider>();
     controller.itemPositionsListener.itemPositions.addListener(() {
       var positions = controller.itemPositionsListener.itemPositions.value;
       progressor.currentElementIndex.value = positions.last.index;
     });
-    return TonoLayoutProvider(
-        type: TonoLayoutType.fix,
-        child: TonoSingleElementWidget(
-            element: root,
+    return TonoInlineStateProvider(
+        state: InlineState(),
+        child: TonoLayoutProvider(
+            type: TonoLayoutType.fix,
             child: TonoSingleElementWidget(
-                element: root.children[0] as TonoContainer,
-                child: ScrollablePositionedList.separated(
-                    key: controller.scrollKey,
-                    addAutomaticKeepAlives: true,
-                    itemScrollController: controller.itemScrollController,
-                    itemPositionsListener: controller.itemPositionsListener,
-                    minCacheExtent: 100,
-                    itemCount: progressor.totalElementCount,
-                    separatorBuilder: (context, index) {
-                      var result = provider.isLast(index);
-                      if (result) {
-                        return SizedBox(
-                          height: Get.mediaQuery.size.height / 3,
-                        );
-                      } else {
-                        return Container();
-                      }
-                    },
-                    itemBuilder: (ctx, index) {
-                      return GestureDetector(
-                          onLongPress: () =>
-                              Get.dialog(OpDialogView(index: index)),
-                          child: TonoContainerWidget(
-                              key: ValueKey(index),
-                              tonoContainer:
-                                  provider.getWidgetByElementCount(index)
-                                      as TonoContainer));
-                    }))));
+                element: root,
+                child: TonoSingleElementWidget(
+                    element: root.children[0] as TonoContainer,
+                    child: ScrollablePositionedList.separated(
+                        key: controller.scrollKey,
+                        itemScrollController: controller.itemScrollController,
+                        itemPositionsListener: controller.itemPositionsListener,
+                        minCacheExtent: 100,
+                        itemCount: progressor.totalElementCount,
+                        separatorBuilder: (context, index) {
+                          if (provider.isLast(index)) {
+                            return SizedBox(
+                              height: Get.mediaQuery.size.height / 3,
+                            );
+                          } else {
+                            return Container();
+                          }
+                        },
+                        itemBuilder: (ctx, index) {
+                          var location = provider.convertIndexToLocation(index);
+                          var isMarked = userData.isMarked(location).obs;
+                          return TonoInteractionProvider(
+                              markded: isMarked,
+                              child: TonoLocationProvider(
+                                  location: location,
+                                  child: GestureDetector(
+                                      onLongPress: () {
+                                        Get.dialog(OpDialogView(
+                                          index: index,
+                                          location: location,
+                                          isMarked: isMarked,
+                                        ));
+                                      },
+                                      child: Stack(
+                                          clipBehavior: Clip.none,
+                                          children: [
+                                            TonoContainerWidget(
+                                                key: ValueKey(index),
+                                                tonoContainer: provider
+                                                    .getWidgetByElementCount(
+                                                        index) as TonoContainer),
+                                            Obx(() => isMarked.value
+                                                ? Positioned(
+                                                    child: Transform.translate(
+                                                        offset: Offset(-10, 0),
+                                                        child: Icon(
+                                                          Icons
+                                                              .bookmark_added_outlined,
+                                                          color: Color.fromARGB(
+                                                              128, 0, 0, 0),
+                                                        )))
+                                                : Container()),
+                                          ]))));
+                        })))));
   }
 }
 

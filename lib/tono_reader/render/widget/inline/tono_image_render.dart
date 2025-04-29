@@ -23,7 +23,7 @@ extension TonoImageRender on TonoInlineContainerWidget {
 
     return WidgetSpan(
         baseline: TextBaseline.alphabetic,
-        alignment: PlaceholderAlignment.aboveBaseline,
+        alignment: PlaceholderAlignment.baseline,
         child: TonoContainerProvider(
             fcm: fcm,
             data: tonoImage,

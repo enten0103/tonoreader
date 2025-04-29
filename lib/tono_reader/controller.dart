@@ -87,7 +87,6 @@ class TonoReaderController extends GetxController {
   void onInit() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky,
         overlays: []);
-
     init();
     super.onInit();
   }

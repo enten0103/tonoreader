@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 class TonoLocation {
   TonoLocation({
     required this.xhtmlIndex,
@@ -18,5 +20,10 @@ class TonoLocation {
       xhtmlIndex: map['xhtmlIndex'] as int,
       elementIndex: map['elementIndex'] as int,
     );
+  }
+
+  @override
+  String toString() {
+    return json.encoder.convert(toMap());
   }
 }

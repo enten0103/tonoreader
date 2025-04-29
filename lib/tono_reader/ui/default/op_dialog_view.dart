@@ -1,19 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:voidlord/tono_reader/model/base/tono_location.dart';
 import 'package:voidlord/tono_reader/state/tono_data_provider.dart';
+import 'package:voidlord/tono_reader/state/tono_user_data_provider.dart';
 import 'package:voidlord/tono_reader/tool/tono_container_stringify.dart';
 
 class OpDialogView extends StatelessWidget {
-  const OpDialogView({
-    super.key,
-    required this.index,
-  });
+  const OpDialogView(
+      {super.key,
+      required this.index,
+      required this.location,
+      required this.isMarked});
 
   final int index;
+  final TonoLocation location;
+  final RxBool isMarked;
 
   @override
   Widget build(BuildContext context) {
     var provider = Get.find<TonoProvider>();
+    var userData = Get.find<TonoUserDataProvider>();
     return Dialog(
       elevation: 19,
       child: ConstrainedBox(
@@ -28,7 +34,7 @@ class OpDialogView extends StatelessWidget {
               height: 12,
             ),
             Text(
-              "操作",
+              "${location.xhtmlIndex} ${location.elementIndex}",
               style: TextStyle(
                 fontSize: 24,
               ),
@@ -55,7 +61,23 @@ class OpDialogView extends StatelessWidget {
               children: [
                 IconButton(
                     onPressed: () {}, icon: Icon(Icons.g_translate_outlined)),
-                IconButton(onPressed: () {}, icon: Icon(Icons.bookmark_added)),
+                IconButton(onPressed: () {
+                  isMarked.value = !isMarked.value;
+                  if (isMarked.value == true) {
+                    userData.bookmarks.add(location);
+                  } else {
+                    userData.bookmarks.removeWhere((e) {
+                      return e.elementIndex == location.elementIndex &&
+                          e.xhtmlIndex == location.xhtmlIndex;
+                    });
+                  }
+                }, icon: Obx(() {
+                  if (isMarked.value) {
+                    return Icon(Icons.bookmark_added);
+                  } else {
+                    return Icon(Icons.bookmark_add_outlined);
+                  }
+                })),
                 IconButton(
                     onPressed: () {}, icon: Icon(Icons.edit_note_outlined)),
                 IconButton(

@@ -18,14 +18,12 @@ class SlideContentView extends StatelessWidget {
         child: Stack(
           children: [
             Padding(
-              padding: EdgeInsetsDirectional.fromSTEB(
-                  border.left, border.top, border.left, border.bottom),
-              child: SafeArea(
-                  child: TonoOuterWidget(
-                key: ValueKey("outer"),
-                root: controller.tonoDataProvider.widgets[0] as TonoContainer,
-              )),
-            ),
+                padding: EdgeInsetsDirectional.fromSTEB(
+                    border.left, border.top, border.left, border.bottom),
+                child: TonoOuterWidget(
+                  key: ValueKey("outer"),
+                  root: controller.tonoDataProvider.widgets[0] as TonoContainer,
+                )),
             Positioned(
                 bottom: border.bottom, right: border.right, child: WaterMark()),
           ],

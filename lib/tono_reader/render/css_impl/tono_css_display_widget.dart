@@ -2,6 +2,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 import 'package:voidlord/tono_reader/render/css_impl/tono_css_widget.dart';
 import 'package:voidlord/tono_reader/render/css_parse/tono_css_display.dart';
+import 'package:voidlord/tono_reader/render/state/tono_inline_state_provider.dart';
 import 'package:voidlord/tono_reader/render/state/tono_layout_provider.dart';
 import 'package:voidlord/tono_reader/tool/reversed_column.dart';
 
@@ -10,6 +11,7 @@ import 'package:voidlord/tono_reader/tool/reversed_column.dart';
 /// - justify-content
 /// - align-item
 /// - text-align
+/// 提供inline state
 class TonoCssDisplayWidget extends TonoCssWidget {
   TonoCssDisplayWidget({
     super.key,
@@ -21,6 +23,12 @@ class TonoCssDisplayWidget extends TonoCssWidget {
   @override
   Widget content(BuildContext context) {
     if (children.length == 1) {
+      if (display == CssDisplay.block) {
+        return TonoInlineStateProvider(
+          state: InlineState(),
+          child: children[0],
+        );
+      }
       return children[0];
     }
     return switch (display) {
@@ -31,13 +39,15 @@ class TonoCssDisplayWidget extends TonoCssWidget {
             crossAxisAlignment: alignItems,
             children: children,
           )),
-      CssDisplay.block => ReversedColumn(
-          crossAxisAlignment: context.tonoLayoutType == TonoLayoutType.fix
-              ? CrossAxisAlignment.stretch
-              : alignItems,
-          mainAxisAlignment: justifyContent,
-          children: children,
-        ),
+      CssDisplay.block => TonoInlineStateProvider(
+          state: InlineState(),
+          child: ReversedColumn(
+            crossAxisAlignment: context.tonoLayoutType == TonoLayoutType.fix
+                ? CrossAxisAlignment.stretch
+                : alignItems,
+            mainAxisAlignment: justifyContent,
+            children: children,
+          )),
       CssDisplay.inline => Row(
           mainAxisAlignment: justifyContent,
           crossAxisAlignment: alignItems,

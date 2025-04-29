@@ -1,30 +1,32 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:voidlord/tono_reader/model/base/tono_location.dart';
 
-class TonoLayoutProvider extends InheritedWidget {
-  const TonoLayoutProvider({
+class TonoLocationProvider extends InheritedWidget {
+  const TonoLocationProvider({
     super.key,
-    required this.index,
+    required this.location,
     required super.child,
   });
 
-  final int index;
+  final TonoLocation location;
 
-  static TonoLayoutProvider of(BuildContext context) {
+  static TonoLocationProvider of(BuildContext context) {
     return context
-        .getElementForInheritedWidgetOfExactType<TonoLayoutProvider>()!
-        .widget as TonoLayoutProvider;
+        .getElementForInheritedWidgetOfExactType<TonoLocationProvider>()!
+        .widget as TonoLocationProvider;
   }
 
   @override
-  bool updateShouldNotify(TonoLayoutProvider old) {
-    return old.index != index;
+  bool updateShouldNotify(TonoLocationProvider old) {
+    return (old.location.elementIndex != location.elementIndex) &&
+        (old.location.xhtmlIndex != location.xhtmlIndex);
   }
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
     properties.add(
-      DiagnosticsProperty("index", index),
+      DiagnosticsProperty("location", location),
     );
 
     super.debugFillProperties(properties);
@@ -32,5 +34,5 @@ class TonoLayoutProvider extends InheritedWidget {
 }
 
 extension ContainerGetter on BuildContext {
-  get tonoLayoutType => TonoLayoutProvider.of(this).index;
+  TonoLocation get location => TonoLocationProvider.of(this).location;
 }

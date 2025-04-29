@@ -28,6 +28,7 @@ dependencies:
   cached_memory_image: ^1.5.0
   msgpack_dart: ^1.0.1
   scrollable_positioned_list: ^0.3.8
+  shared_preferences: ^2.5.3
 
 dev_dependencies:
   flutter_test:

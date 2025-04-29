@@ -12,13 +12,6 @@ class AsyncMemoryImage extends ImageProvider<AsyncMemoryImage> {
 
   AsyncMemoryImage(this.dataFuture, this.cacheKey);
 
-  static final Map<String, Uint8List> _imageCache = {};
-
-  /// 清除所有缓存
-  static void clearCache() {
-    _imageCache.clear();
-  }
-
   @override
   Future<AsyncMemoryImage> obtainKey(ImageConfiguration configuration) {
     return SynchronousFuture<AsyncMemoryImage>(this);
@@ -55,8 +48,8 @@ class AsyncMemoryImage extends ImageProvider<AsyncMemoryImage> {
   }
 
   @override
-  int get hashCode =>
-      "$cacheKey${Get.find<TonoProvider>().fontPrefix}".hashCode;
+  int get hashCode => int.parse(
+      "${cacheKey.hashCode}${Get.find<TonoProvider>().fontPrefix.hashCode}");
 
   @override
   String toString() => '${objectRuntimeType(this, 'AsyncMemoryImage')}'

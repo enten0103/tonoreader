@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_container.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_image.dart';
+import 'package:voidlord/tono_reader/model/widget/tono_ruby.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_text.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_widget.dart';
 import 'package:voidlord/tono_reader/render/css_impl/tono_css_widget.dart';
 import 'package:voidlord/tono_reader/render/widget/inline/tono_container_render.dart';
 import 'package:voidlord/tono_reader/render/widget/inline/tono_image_render.dart';
+import 'package:voidlord/tono_reader/render/widget/inline/tono_ruby_render.dart';
 import 'package:voidlord/tono_reader/render/widget/inline/tono_text_render.dart';
 
 class TonoInlineContainerWidget extends TonoCssWidget {
@@ -16,23 +18,25 @@ class TonoInlineContainerWidget extends TonoCssWidget {
   });
 
   final List<TonoWidget> inlineWidgets;
+
   @override
   Widget content(BuildContext context) {
-    List<InlineSpan> spans = [];
-    for (final widget in inlineWidgets) {
-      if (widget is TonoText) {
-        final result = renderText(context, widget);
-        spans.add(result);
-      } else if (widget is TonoContainer) {
-        spans.add(renderContainer(widget));
-      } else if (widget is TonoImage) {
-        spans.add(renderImage(widget));
-      } else {
-        spans.add(const TextSpan(text: "unknown widget"));
-      }
-    }
     return Text.rich(
-      TextSpan(children: spans),
+      TextSpan(
+        children: inlineWidgets.map((e) {
+          if (e is TonoText) {
+            return renderText(e, context);
+          } else if (e is TonoContainer) {
+            return renderContainer(e);
+          } else if (e is TonoRuby) {
+            return renderRuby(e, context);
+          } else if (e is TonoImage) {
+            return renderImage(e);
+          } else {
+            return const TextSpan(text: "unknown widget");
+          }
+        }).toList(),
+      ),
       textAlign: textAlign,
     );
   }

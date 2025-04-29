@@ -4,14 +4,16 @@ import 'package:voidlord/bindings/default_binding.dart';
 import 'package:voidlord/routes/void_routers.dart';
 import 'package:voidlord/utils/setting.dart';
 
-void main() => runApp(const MyApp());
+void main() {
+  runApp(const MyApp());
+  Setting.apply();
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    Setting.apply();
     return GetMaterialApp(
         title: 'voidlord',
         debugShowCheckedModeBanner: false,

@@ -9,6 +9,7 @@ import 'package:voidlord/tono_reader/state/tono_assets_provider.dart';
 import 'package:voidlord/tono_reader/state/tono_data_provider.dart';
 import 'package:voidlord/tono_reader/state/tono_prepager.dart';
 import 'package:voidlord/tono_reader/state/tono_progresser.dart';
+import 'package:voidlord/tono_reader/state/tono_user_data_provider.dart';
 
 class TonoInitializer {
   static init(Tono tono) async {
@@ -16,6 +17,7 @@ class TonoInitializer {
     _loadState();
     _loadConfig();
     await _initData(tono);
+    await _initUserData();
   }
 
   static Future<void> _loadFont(Tono tono) async {
@@ -39,5 +41,11 @@ class TonoInitializer {
 
   static _initData(Tono tono) async {
     await Get.find<TonoProvider>().init(tono);
+  }
+
+  static _initUserData() async {
+    var userData = TonoUserDataProvider();
+    await userData.init();
+    Get.put(userData);
   }
 }

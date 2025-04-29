@@ -2,6 +2,7 @@ import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/state_manager.dart';
 import 'package:voidlord/tono_reader/model/base/tono.dart';
 import 'package:voidlord/tono_reader/model/base/tono_book_info.dart';
+import 'package:voidlord/tono_reader/model/base/tono_location.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_container.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_widget.dart';
 import 'package:voidlord/tono_reader/state/tono_progresser.dart';
@@ -40,6 +41,30 @@ class TonoProvider extends GetxController {
             .children
             .length ==
         count + 1;
+  }
+
+  int convertLocationToIndex(TonoLocation location) {
+    var progressor = Get.find<TonoProgresser>();
+    int count = 0;
+    for (int i = 0; i < location.xhtmlIndex; i++) {
+      count += progressor.elementSequence[i];
+    }
+    count += location.elementIndex;
+    return count;
+  }
+
+  TonoLocation convertIndexToLocation(int count) {
+    var progressor = Get.find<TonoProgresser>();
+    int index = 0;
+    while (count - progressor.elementSequence[index] >= 0 &&
+        index < progressor.elementSequence.length) {
+      count -= progressor.elementSequence[index];
+      index++;
+    }
+    return TonoLocation(
+      elementIndex: count,
+      xhtmlIndex: index,
+    );
   }
 
   TonoWidget getWidgetByElementCount(int count) {

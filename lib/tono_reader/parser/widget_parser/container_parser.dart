@@ -7,6 +7,7 @@ import 'package:voidlord/tono_reader/model/widget/tono_widget.dart';
 import 'package:voidlord/tono_reader/parser/tono_parser.dart';
 import 'package:voidlord/tono_reader/parser/tono_selector_macher.dart';
 import 'package:voidlord/tono_reader/parser/widget_parser/img_parser.dart';
+import 'package:voidlord/tono_reader/parser/widget_parser/ruby_parser.dart';
 import 'package:voidlord/tono_reader/tool/css_tool.dart';
 
 extension ContainerParser on TonoParser {
@@ -49,8 +50,12 @@ extension ContainerParser on TonoParser {
           children.add(
               toImg(element, currentPath, css, inheritStyles: inheritStyles));
         } else {
-          if (element.localName == "rt") {
-            continue;
+          if (element.localName == "ruby") {
+            children.add(toRuby(
+              element,
+              css,
+              inheritStyles: theInheritStyle,
+            ));
           } else {
             children.add(toContainer(element, currentPath, css,
                 inheritStyles: theInheritStyle));
@@ -68,6 +73,7 @@ extension ContainerParser on TonoParser {
     var display = "block";
     if (element.localName == "a" ||
         element.localName == "span" ||
+        element.localName == "ruby" ||
         element.localName == "sup") {
       display = "inline";
     }
