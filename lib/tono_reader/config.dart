@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:voidlord/tono_reader/model/config.dart';
 
 class TonoReaderConfig {
@@ -20,12 +22,15 @@ class TonoReaderConfig {
   double lineSpacing = 1;
 
   ///是否启用行首缩进
-  bool indentationEnable = false;
+  bool indentationEnable = true;
 
   ///ruby大小
   double rubySize = 0.5;
 
+  //markder颜色
+  Color markerColor = Color.fromARGB(230, 192, 54, 69);
+
   ///视口设置
   ViewPortConfig viewPortConfig =
-      ViewPortConfig(left: 20, right: 20, top: 0, bottom: 20);
+      ViewPortConfig(left: 25, right: 25, top: 40, bottom: 40);
 }

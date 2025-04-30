@@ -3,6 +3,7 @@ import 'package:voidlord/tono_reader/model/style/tono_style.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_container.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_text.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_widget.dart';
+import 'package:voidlord/tono_reader/tool/vertical_clipper.dart';
 
 class UserPage extends StatelessWidget {
   const UserPage({super.key});
@@ -11,16 +12,18 @@ class UserPage extends StatelessWidget {
     return SafeArea(
         child: Center(
             child: Container(
-      clipBehavior: Clip.none,
       width: 200,
       height: 200,
       color: Colors.blueAccent,
-      child: ListView.builder(
-          clipBehavior: Clip.none,
-          itemBuilder: (ctx, index) {
-            return Transform.translate(
-                offset: Offset(-10, 0), child: Text("index$index"));
-          }),
+      child: ClipRect(
+        clipper: VerticalClipper(),
+        child: UnconstrainedBox(
+            child: Container(
+          width: 300,
+          height: 400,
+          color: Colors.lightGreenAccent,
+        )),
+      ),
     )));
   }
 }

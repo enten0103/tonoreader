@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:voidlord/tono_reader/model/base/tono.dart';
 import 'package:voidlord/tono_reader/model/base/tono_type.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_container.dart';
@@ -10,7 +9,10 @@ import 'package:voidlord/tono_reader/state/tono_data_provider.dart';
 import 'package:voidlord/tono_reader/state/tono_flager.dart';
 import 'package:voidlord/tono_reader/state/tono_initializer.dart';
 import 'package:voidlord/tono_reader/state/tono_progresser.dart';
+import 'package:voidlord/tono_reader/state/tono_user_data_provider.dart';
 import 'package:voidlord/tono_reader/tool/nav_darwer.dart';
+import 'package:voidlord/tono_reader/tool/scroll/src/item_positions_listener.dart';
+import 'package:voidlord/tono_reader/tool/scroll/src/scrollable_positioned_list.dart';
 import 'package:voidlord/tono_reader/tool/tono_serializer.dart';
 import 'package:voidlord/utils/type.dart';
 
@@ -23,9 +25,6 @@ class TonoReaderController extends GetxController {
   final ItemScrollController itemScrollController = ItemScrollController();
   final ItemPositionsListener itemPositionsListener =
       ItemPositionsListener.create();
-  final scrollKey = GlobalKey();
-
-  final slideKey = GlobalKey();
 
   final String id;
   final TonoType tonoType;
@@ -33,6 +32,8 @@ class TonoReaderController extends GetxController {
   late TonoFlager tonoFlager = Get.find<TonoFlager>();
   late TonoProgresser tonoProgresser = Get.find<TonoProgresser>();
   late TonoProvider tonoDataProvider = Get.find<TonoProvider>();
+  late TonoUserDataProvider tonoUserDataProvider =
+      Get.find<TonoUserDataProvider>();
 
   void changeChapter(String id) async {
     var index = tonoDataProvider.xhtmls.indexOf(id);
@@ -44,8 +45,6 @@ class TonoReaderController extends GetxController {
       index: resultIndex,
     );
   }
-
-  void siblingChapter(TapDownDetails details) async {}
 
   void onBodyClick() {
     tonoFlager.isStateVisible.value =
@@ -99,6 +98,7 @@ class TonoReaderController extends GetxController {
   @override
   void onClose() {
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
+    tonoUserDataProvider.saveToLocal();
     super.onClose();
   }
 }

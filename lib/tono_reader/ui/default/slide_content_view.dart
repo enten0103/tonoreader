@@ -1,4 +1,4 @@
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:voidlord/tono_reader/config.dart';
 import 'package:voidlord/tono_reader/controller.dart';
@@ -15,17 +15,98 @@ class SlideContentView extends StatelessWidget {
     var border = config.viewPortConfig;
     return GestureDetector(
         onTap: () => controller.onBodyClick(),
-        child: Stack(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Padding(
-                padding: EdgeInsetsDirectional.fromSTEB(
-                    border.left, border.top, border.left, border.bottom),
+            SizedBox(
+                width: Get.size.width,
+                height: border.top,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned(
+                        bottom: 0,
+                        left: 0,
+                        right: 0,
+                        child: Align(
+                            child: Container(
+                          width: Get.size.width - border.left - border.right,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Color.fromRGBO(216, 216, 216, 1),
+                                blurRadius: 12,
+                                spreadRadius: 1,
+                                offset: Offset(0, -6),
+                              ),
+                            ],
+                            // 添加渐变过渡（可选）
+                            gradient: LinearGradient(
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                              colors: [
+                                const Color.fromARGB(204, 255, 255, 255),
+                                Colors.transparent,
+                              ],
+                            ),
+                          ),
+                        ))),
+                    Container(
+                      width: Get.size.width,
+                      height: border.bottom,
+                      color: Get.theme.colorScheme.surface,
+                    )
+                  ],
+                )),
+            SizedBox(
+                height: Get.size.height - border.top - border.bottom,
+                width: Get.size.width,
                 child: TonoOuterWidget(
-                  key: ValueKey("outer"),
                   root: controller.tonoDataProvider.widgets[0] as TonoContainer,
                 )),
-            Positioned(
-                bottom: border.bottom, right: border.right, child: WaterMark()),
+            SizedBox(
+                width: Get.size.width,
+                height: border.bottom,
+                child: Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned(
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        child: Align(
+                            child: Container(
+                          width: Get.size.width - border.left - border.right,
+                          height: 20,
+                          decoration: BoxDecoration(
+                            boxShadow: [
+                              BoxShadow(
+                                color: Color.fromRGBO(216, 216, 216, 1),
+                                blurRadius: 12,
+                                spreadRadius: 1,
+                                offset: Offset(0, 6),
+                              ),
+                            ],
+                            // 添加渐变过渡（可选）
+                            gradient: LinearGradient(
+                              begin: Alignment.bottomCenter,
+                              end: Alignment.topCenter,
+                              colors: [
+                                const Color.fromARGB(204, 255, 255, 255),
+                                Colors.transparent,
+                              ],
+                            ),
+                          ),
+                        ))),
+                    Container(
+                      width: Get.size.width,
+                      height: border.bottom,
+                      color: Get.theme.colorScheme.surface,
+                      child: WaterMark(),
+                    )
+                  ],
+                )),
           ],
         ));
   }

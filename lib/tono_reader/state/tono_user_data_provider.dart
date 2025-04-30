@@ -8,7 +8,10 @@ import 'package:voidlord/tono_reader/model/base/tono_note.dart';
 class TonoUserDataProvider extends GetxController {
   List<TonoLocation> bookmarks = [];
   List<TonoNote> notes = [];
-  Future init() async {}
+  Future init() async {
+    await initFromLocal();
+  }
+
   Future initFromLocal() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
     var bookMarksRaw = prefs.getStringList("bookmarks");
@@ -27,6 +30,7 @@ class TonoUserDataProvider extends GetxController {
 
   Future saveToLocal() async {
     final SharedPreferences prefs = await SharedPreferences.getInstance();
+
     prefs.setStringList("bookmarks",
         bookmarks.map((e) => json.encoder.convert(e.toMap())).toList());
     prefs.setStringList(

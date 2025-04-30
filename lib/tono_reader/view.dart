@@ -4,8 +4,9 @@ import 'package:voidlord/tono_reader/controller.dart';
 import 'package:voidlord/tono_reader/model/base/tono_type.dart';
 import 'package:voidlord/tono_reader/state/tono_data_provider.dart';
 import 'package:voidlord/tono_reader/state/tono_flager.dart';
-import 'package:voidlord/tono_reader/state/tono_progresser.dart';
+import 'package:voidlord/tono_reader/state/tono_left_drawer_controller.dart';
 import 'package:voidlord/tono_reader/ui/default/bottom_bar_view.dart';
+import 'package:voidlord/tono_reader/ui/default/left_darwer.dart';
 import 'package:voidlord/tono_reader/ui/default/side_bar_view.dart';
 import 'package:voidlord/tono_reader/ui/default/slide_content_view.dart';
 import 'package:voidlord/tono_reader/ui/default/top_bar_view.dart';
@@ -25,8 +26,9 @@ class TonoReader extends StatelessWidget {
     var controller = Get.put(TonoReaderController(id: id, tonoType: tonoType));
     var flager = Get.put(TonoFlager());
     var dataProvoder = Get.put(TonoProvider());
-    Get.put(TonoProgresser());
+    var sideBarController = Get.put(TonoLeftDrawerController());
     return Scaffold(
+      key: sideBarController.scaffoldKey,
       body: Stack(
         children: [
           // 阅读内容，固定大小
@@ -81,6 +83,9 @@ class TonoReader extends StatelessWidget {
                 )),
           ),
         ],
+      ),
+      drawer: Drawer(
+        child: LeftDarwer(),
       ),
     );
   }

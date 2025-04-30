@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:voidlord/tono_reader/state/tono_left_drawer_controller.dart';
 
 class BottomBarView extends StatelessWidget {
   const BottomBarView({
@@ -18,7 +20,10 @@ class BottomBarView extends StatelessWidget {
           SizedBox(),
           IconButton(
               onPressed: () {
-                onMenuBtnPress();
+                Get.find<TonoLeftDrawerController>()
+                    .scaffoldKey
+                    .currentState
+                    ?.openDrawer();
               },
               icon: Icon(Icons.menu)),
           IconButton(onPressed: () {}, icon: Icon(Icons.text_format)),

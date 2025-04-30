@@ -1,15 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:get/get.dart';
-import 'package:scrollable_positioned_list/scrollable_positioned_list.dart';
 import 'package:voidlord/tono_reader/config.dart';
 import 'package:voidlord/tono_reader/controller.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_container.dart';
-import 'package:voidlord/tono_reader/render/css_impl/tono_css_transform_widget.dart';
 import 'package:voidlord/tono_reader/render/css_parse/tono_css_converter.dart';
 import 'package:voidlord/tono_reader/render/state/tono_container_provider.dart';
-import 'package:voidlord/tono_reader/render/css_impl/tono_css_margin_widget.dart';
-import 'package:voidlord/tono_reader/render/css_impl/tono_css_size_padding_widget.dart';
 import 'package:voidlord/tono_reader/render/state/tono_inline_state_provider.dart';
 import 'package:voidlord/tono_reader/render/state/tono_interaction_provider.dart';
 import 'package:voidlord/tono_reader/render/state/tono_layout_provider.dart';
@@ -19,6 +14,9 @@ import 'package:voidlord/tono_reader/render/widget/tono_container_widget.dart';
 import 'package:voidlord/tono_reader/state/tono_data_provider.dart';
 import 'package:voidlord/tono_reader/state/tono_progresser.dart';
 import 'package:voidlord/tono_reader/state/tono_user_data_provider.dart';
+import 'package:voidlord/tono_reader/tool/scroll/src/scrollable_positioned_list.dart';
+import 'package:voidlord/tono_reader/tool/vertical_clipper.dart';
+import 'package:voidlord/tono_reader/ui/default/comps/marker.dart';
 import 'package:voidlord/tono_reader/ui/default/op_dialog_view.dart';
 
 ///
@@ -47,6 +45,7 @@ class TonoOuterWidget extends StatelessWidget {
     var provider = Get.find<TonoProvider>()..initSliderProgressor();
     var progressor = Get.find<TonoProgresser>();
     var controller = Get.find<TonoReaderController>();
+    var config = Get.find<TonoReaderConfig>();
     var userData = Get.find<TonoUserDataProvider>();
     controller.itemPositionsListener.itemPositions.addListener(() {
       var positions = controller.itemPositionsListener.itemPositions.value;
@@ -60,57 +59,57 @@ class TonoOuterWidget extends StatelessWidget {
                 element: root,
                 child: TonoSingleElementWidget(
                     element: root.children[0] as TonoContainer,
-                    child: ScrollablePositionedList.separated(
-                        key: controller.scrollKey,
-                        itemScrollController: controller.itemScrollController,
-                        itemPositionsListener: controller.itemPositionsListener,
-                        minCacheExtent: 100,
-                        itemCount: progressor.totalElementCount,
-                        separatorBuilder: (context, index) {
-                          if (provider.isLast(index)) {
-                            return SizedBox(
-                              height: Get.mediaQuery.size.height / 3,
-                            );
-                          } else {
-                            return Container();
-                          }
-                        },
-                        itemBuilder: (ctx, index) {
-                          var location = provider.convertIndexToLocation(index);
-                          var isMarked = userData.isMarked(location).obs;
-                          return TonoInteractionProvider(
-                              markded: isMarked,
-                              child: TonoLocationProvider(
-                                  location: location,
-                                  child: GestureDetector(
-                                      onLongPress: () {
-                                        Get.dialog(OpDialogView(
-                                          index: index,
-                                          location: location,
-                                          isMarked: isMarked,
-                                        ));
-                                      },
-                                      child: Stack(
-                                          clipBehavior: Clip.none,
-                                          children: [
-                                            TonoContainerWidget(
-                                                key: ValueKey(index),
-                                                tonoContainer: provider
-                                                    .getWidgetByElementCount(
-                                                        index) as TonoContainer),
-                                            Obx(() => isMarked.value
-                                                ? Positioned(
-                                                    child: Transform.translate(
-                                                        offset: Offset(-10, 0),
-                                                        child: Icon(
-                                                          Icons
-                                                              .bookmark_added_outlined,
-                                                          color: Color.fromARGB(
-                                                              128, 0, 0, 0),
-                                                        )))
-                                                : Container()),
-                                          ]))));
-                        })))));
+                    child: ClipRect(
+                        clipper: VerticalClipper(),
+                        child: ScrollablePositionedList.separated(
+                            padding: EdgeInsets.only(
+                              left: config.viewPortConfig.left,
+                              right: config.viewPortConfig.right,
+                            ),
+                            itemScrollController:
+                                controller.itemScrollController,
+                            itemPositionsListener:
+                                controller.itemPositionsListener,
+                            minCacheExtent: 100,
+                            itemCount: progressor.totalElementCount,
+                            separatorBuilder: (context, index) {
+                              if (provider.isLast(index)) {
+                                return SizedBox(
+                                  height: Get.mediaQuery.size.height / 3,
+                                );
+                              } else {
+                                return Container();
+                              }
+                            },
+                            itemBuilder: (ctx, index) {
+                              var location =
+                                  provider.convertIndexToLocation(index);
+                              var isMarked = userData.isMarked(location).obs;
+                              return TonoInteractionProvider(
+                                  markded: isMarked,
+                                  child: TonoLocationProvider(
+                                      location: location,
+                                      child: GestureDetector(
+                                          onLongPress: () {
+                                            Get.dialog(OpDialogView(
+                                              index: index,
+                                              location: location,
+                                              isMarked: isMarked,
+                                            ));
+                                          },
+                                          child: Stack(
+                                              clipBehavior: Clip.none,
+                                              children: [
+                                                TonoContainerWidget(
+                                                    key: ValueKey(index),
+                                                    tonoContainer: provider
+                                                            .getWidgetByElementCount(
+                                                                index)
+                                                        as TonoContainer),
+                                                Obx(() => Marker(
+                                                    isMarked: isMarked.value))
+                                              ]))));
+                            }))))));
   }
 }
 
@@ -139,10 +138,7 @@ class TonoSingleElementWidget extends StatelessWidget {
         fcm: fcm,
         parentSize: Rx(null),
         data: element,
-        child: TonoCssTransformWidget(
-            child: TonoCssMarginWidget(
-          child: TonoCssSizePaddingWidget(child: child),
-        )),
+        child: child,
       );
     } on NeedParentSizeException catch (_) {
       return Obx(() {
@@ -162,10 +158,7 @@ class TonoSingleElementWidget extends StatelessWidget {
             fcm: fcm,
             parentSize: Rx(parentSize.value),
             data: element,
-            child: TonoCssTransformWidget(
-                child: TonoCssMarginWidget(
-              child: TonoCssSizePaddingWidget(child: child),
-            )),
+            child: child,
           );
         }
       });
