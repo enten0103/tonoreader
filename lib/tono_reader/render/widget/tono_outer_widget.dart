@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:voidlord/tono_reader/config.dart';
 import 'package:voidlord/tono_reader/controller.dart';
+import 'package:voidlord/tono_reader/model/base/tono_location.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_container.dart';
 import 'package:voidlord/tono_reader/render/css_parse/tono_css_converter.dart';
 import 'package:voidlord/tono_reader/render/state/tono_container_provider.dart';
@@ -17,7 +18,8 @@ import 'package:voidlord/tono_reader/state/tono_user_data_provider.dart';
 import 'package:voidlord/tono_reader/tool/scroll/src/scrollable_positioned_list.dart';
 import 'package:voidlord/tono_reader/tool/vertical_clipper.dart';
 import 'package:voidlord/tono_reader/ui/default/comps/marker.dart';
-import 'package:voidlord/tono_reader/ui/default/op_dialog_view.dart';
+import 'package:voidlord/tono_reader/ui/default/comps/title_divline.dart';
+import 'package:voidlord/tono_reader/ui/default/comps/dialog/op_dialog_view.dart';
 
 ///
 /// body+html元素渲染
@@ -49,7 +51,7 @@ class TonoOuterWidget extends StatelessWidget {
     var userData = Get.find<TonoUserDataProvider>();
     controller.itemPositionsListener.itemPositions.addListener(() {
       var positions = controller.itemPositionsListener.itemPositions.value;
-      progressor.currentElementIndex.value = positions.last.index;
+      progressor.currentElementIndex.value = positions.first.index;
     });
     return TonoInlineStateProvider(
         state: InlineState(),
@@ -73,17 +75,27 @@ class TonoOuterWidget extends StatelessWidget {
                             minCacheExtent: 100,
                             itemCount: progressor.totalElementCount,
                             separatorBuilder: (context, index) {
+                              var histroyIndex = userData.histroy.toIndex();
                               if (provider.isLast(index)) {
+                                if (histroyIndex != 0 &&
+                                    histroyIndex == index) {
+                                  return SizedBox(
+                                      height: Get.mediaQuery.size.height / 3,
+                                      child: TitleDivline(title: "上次看到"));
+                                }
                                 return SizedBox(
                                   height: Get.mediaQuery.size.height / 3,
                                 );
                               } else {
+                                if (histroyIndex != 0 &&
+                                    histroyIndex == index) {
+                                  return TitleDivline(title: "上次看到");
+                                }
                                 return Container();
                               }
                             },
                             itemBuilder: (ctx, index) {
-                              var location =
-                                  provider.convertIndexToLocation(index);
+                              var location = index.toLocation();
                               var isMarked = userData.isMarked(location).obs;
                               return TonoInteractionProvider(
                                   markded: isMarked,
@@ -111,59 +123,6 @@ class TonoOuterWidget extends StatelessWidget {
                                               ]))));
                             }))))));
   }
-}
-
-class TonoSingleElementWidget extends StatelessWidget {
-  const TonoSingleElementWidget({
-    super.key,
-    required this.element,
-    required this.child,
-  });
-
-  final TonoContainer element;
-  final Widget child;
-  @override
-  Widget build(BuildContext context) {
-    var cache = Get.find<TonoParentSizeCache>();
-    try {
-      var fcm = FlutterStyleFromCss(
-        element.css,
-        pdisplay: element.parent?.display,
-        tdisplay: element.display,
-        parentSize: element.className == "html"
-            ? genContainerSize()
-            : cache.getSize(element.hashCode) ?? context.parentSize?.value,
-      ).flutterStyleMap;
-      return TonoContainerProvider(
-        fcm: fcm,
-        parentSize: Rx(null),
-        data: element,
-        child: child,
-      );
-    } on NeedParentSizeException catch (_) {
-      return Obx(() {
-        var parentSize = context.parentSize;
-        if (parentSize?.value == null) {
-          return SizedBox.expand();
-        } else {
-          cache.setSize(element.hashCode, parentSize!.value!);
-          var fcm = FlutterStyleFromCss(
-            pdisplay: element.parent?.display,
-            element.css,
-            tdisplay: element.display,
-            parentSize: parentSize.value,
-          ).flutterStyleMap;
-
-          return TonoContainerProvider(
-            fcm: fcm,
-            parentSize: Rx(parentSize.value),
-            data: element,
-            child: child,
-          );
-        }
-      });
-    }
-  }
 
   Size genContainerSize() {
     var config = Get.find<TonoReaderConfig>();
@@ -181,4 +140,51 @@ class TonoSingleElementWidget extends StatelessWidget {
             config.viewPortConfig.top -
             config.viewPortConfig.bottom);
   }
+}
+
+class TonoSingleElementWidget extends StatelessWidget {
+  const TonoSingleElementWidget({
+    super.key,
+    required this.element,
+    required this.child,
+  });
+
+  final TonoContainer element;
+  final Widget child;
+  @override
+  Widget build(BuildContext context) {
+    var cache = Get.find<TonoParentSizeCache>();
+
+    var fcm = FlutterStyleFromCss(
+      element.css,
+      pdisplay: element.parent?.display,
+      tdisplay: element.display,
+      parentSize: element.className == "html" || element.className == "body"
+          ? genContainerSize().toPredictSize()
+          : cache.getSize(element.hashCode) ?? context.psize.value,
+    ).flutterStyleMap;
+    return TonoContainerProvider(
+      fcm: fcm,
+      psize: Rx(genContainerSize().toPredictSize()),
+      data: element,
+      child: child,
+    );
+  }
+}
+
+Size genContainerSize() {
+  var config = Get.find<TonoReaderConfig>();
+  var padding = Get.mediaQuery.padding;
+  var screenSize = Get.mediaQuery.size;
+  return Size(
+      screenSize.width -
+          padding.left -
+          padding.right -
+          config.viewPortConfig.left -
+          config.viewPortConfig.right,
+      screenSize.height -
+          padding.top -
+          padding.bottom -
+          config.viewPortConfig.top -
+          config.viewPortConfig.bottom);
 }

@@ -1,4 +1,5 @@
 import 'package:get/get_instance/src/extension_instance.dart';
+import 'package:get/get_utils/get_utils.dart';
 import 'package:get/state_manager.dart';
 import 'package:voidlord/tono_reader/model/base/tono.dart';
 import 'package:voidlord/tono_reader/model/base/tono_book_info.dart';
@@ -9,11 +10,27 @@ import 'package:voidlord/tono_reader/state/tono_progresser.dart';
 
 class TonoProvider extends GetxController {
   late Tono tono;
-  String fontPrefix = "";
+  String bookHash = "";
   String title = "";
   List<TonoNavItem> navList = [];
   List<TonoWidget> widgets = [];
   List<String> xhtmls = [];
+
+  String convertIndexToTitle(int index) {
+    var xhtmlIndex = index.toLocation().xhtmlIndex;
+    var xhtml = xhtmls[xhtmlIndex];
+    var title = "";
+    while (xhtmlIndex >= 0) {
+      var nav = navList.firstWhereOrNull((e) => e.path == xhtml);
+      if (nav != null) {
+        title = nav.title;
+        break;
+      }
+      xhtmlIndex--;
+      xhtml = xhtmls[xhtmlIndex];
+    }
+    return title;
+  }
 
   void initSliderProgressor() {
     var progressor = Get.find<TonoProgresser>();
@@ -43,30 +60,6 @@ class TonoProvider extends GetxController {
         count + 1;
   }
 
-  int convertLocationToIndex(TonoLocation location) {
-    var progressor = Get.find<TonoProgresser>();
-    int count = 0;
-    for (int i = 0; i < location.xhtmlIndex; i++) {
-      count += progressor.elementSequence[i];
-    }
-    count += location.elementIndex;
-    return count;
-  }
-
-  TonoLocation convertIndexToLocation(int count) {
-    var progressor = Get.find<TonoProgresser>();
-    int index = 0;
-    while (count - progressor.elementSequence[index] >= 0 &&
-        index < progressor.elementSequence.length) {
-      count -= progressor.elementSequence[index];
-      index++;
-    }
-    return TonoLocation(
-      elementIndex: count,
-      xhtmlIndex: index,
-    );
-  }
-
   TonoWidget getWidgetByElementCount(int count) {
     var progressor = Get.find<TonoProgresser>();
     int index = 0;
@@ -81,7 +74,7 @@ class TonoProvider extends GetxController {
 
   Future init(Tono tono) async {
     this.tono = tono;
-    fontPrefix = tono.hash;
+    bookHash = tono.hash;
     title = tono.bookInfo.title;
     navList.addAll(List.from(tono.navItems));
     xhtmls.addAll(List.from(tono.xhtmls));

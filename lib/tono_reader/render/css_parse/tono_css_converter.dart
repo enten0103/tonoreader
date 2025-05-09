@@ -27,7 +27,9 @@ import 'package:voidlord/tono_reader/render/css_parse/tono_css_text_indent.dart'
 import 'package:voidlord/tono_reader/render/css_parse/tono_css_text_shadow.dart';
 import 'package:voidlord/tono_reader/render/css_parse/tono_css_transform_origin.dart';
 import 'package:voidlord/tono_reader/render/css_parse/tono_css_width.dart';
+import 'package:voidlord/tono_reader/render/state/tono_container_provider.dart';
 import 'package:voidlord/tono_reader/tool/box_decoration.dart';
+import 'package:voidlord/tono_reader/tool/color_tool.dart';
 import 'package:voidlord/tono_reader/tool/css_tool.dart';
 import 'package:voidlord/tono_reader/tool/styled_border.dart';
 
@@ -121,7 +123,7 @@ class FlutterStyleFromCss {
   final Map<String, dynamic> flutterStyleMap = {};
 
   /// 父容器大小
-  final Size? parentSize;
+  final PredictSize? parentSize;
 
   /// container display
   late final String? tdisplay;
@@ -238,6 +240,10 @@ class FlutterStyleFromCss {
   }
 
   Color? parseColor(String? colorStr) {
+    return parseRawColor(colorStr)?.applyLightness();
+  }
+
+  Color? parseRawColor(String? colorStr) {
     if (colorStr == null) return null;
     final normalized = colorStr
         .replaceAll(RegExp(r'[#!important]', caseSensitive: false), '')

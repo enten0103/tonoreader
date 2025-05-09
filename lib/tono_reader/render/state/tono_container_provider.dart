@@ -3,17 +3,29 @@ import 'package:flutter/rendering.dart';
 import 'package:get/state_manager.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_widget.dart';
 
+extension SizeTool on Size {
+  toPredictSize() {
+    return PredictSize(width: width, height: height);
+  }
+}
+
+class PredictSize {
+  PredictSize({this.width, this.height});
+  double? width;
+  double? height;
+}
+
 class TonoContainerProvider extends InheritedWidget {
   const TonoContainerProvider({
     super.key,
     required this.data,
     required super.child,
     required this.fcm,
-    required this.parentSize,
+    required this.psize,
   });
 
   final TonoWidget data;
-  final Rx<Size?> parentSize;
+  final Rx<PredictSize> psize;
   final Map<String, dynamic> fcm;
 
   static TonoContainerProvider of(BuildContext context) {
@@ -29,11 +41,15 @@ class TonoContainerProvider extends InheritedWidget {
 
   @override
   void debugFillProperties(DiagnosticPropertiesBuilder properties) {
+    for (var entity in fcm.entries) {
+      properties.add(DiagnosticsProperty(entity.key, entity.value));
+    }
+
     properties.add(
-      DiagnosticsProperty("css", data.css),
+      DiagnosticsProperty("predict_size_width", psize.value.width),
     );
     properties.add(
-      DiagnosticsProperty("fcm", fcm),
+      DiagnosticsProperty("predict_size_height", psize.value.height),
     );
 
     super.debugFillProperties(properties);
@@ -42,6 +58,6 @@ class TonoContainerProvider extends InheritedWidget {
 
 extension ContainerGetter on BuildContext {
   TonoWidget get tonoWidget => TonoContainerProvider.of(this).data;
-  Rx<Size?>? get parentSize => TonoContainerProvider.of(this).parentSize;
+  Rx<PredictSize> get psize => TonoContainerProvider.of(this).psize;
   Map<String, dynamic> get fcm => TonoContainerProvider.of(this).fcm;
 }

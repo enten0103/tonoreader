@@ -29,11 +29,11 @@ class TonoContainerWidget extends StatelessWidget {
         pdisplay: tonoContainer.parent?.display,
         tdisplay: tonoContainer.display,
         parentSize:
-            cache.getSize(tonoContainer.hashCode) ?? context.parentSize?.value,
+            cache.getSize(tonoContainer.hashCode) ?? context.psize.value,
       ).flutterStyleMap;
       return TonoContainerProvider(
         fcm: fcm,
-        parentSize: Rx(null),
+        psize: Rx(PredictSize()),
         data: tonoContainer,
         child: TonoCssTransformWidget(
             child: TonoCssMarginWidget(
@@ -43,11 +43,13 @@ class TonoContainerWidget extends StatelessWidget {
       );
     } on NeedParentSizeException catch (_) {
       return Obx(() {
-        var parentSize = context.parentSize;
-        if (parentSize?.value == null) {
-          return SizedBox.expand();
+        var parentSize = context.psize;
+        if (parentSize.value.width == null && parentSize.value.height == null) {
+          return SizedBox(
+            width: double.infinity,
+          );
         } else {
-          cache.setSize(tonoContainer.hashCode, parentSize!.value!);
+          cache.setSize(tonoContainer.hashCode, parentSize.value);
           var fcm = FlutterStyleFromCss(
             tonoContainer.css,
             pdisplay: tonoContainer.parent?.display,
@@ -57,7 +59,7 @@ class TonoContainerWidget extends StatelessWidget {
 
           return TonoContainerProvider(
             fcm: fcm,
-            parentSize: Rx(parentSize.value),
+            psize: Rx(parentSize.value),
             data: tonoContainer,
             child: TonoCssTransformWidget(
                 child: TonoCssMarginWidget(

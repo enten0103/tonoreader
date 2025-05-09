@@ -49,7 +49,7 @@ class AsyncMemoryImage extends ImageProvider<AsyncMemoryImage> {
 
   @override
   int get hashCode => int.parse(
-      "${cacheKey.hashCode}${Get.find<TonoProvider>().fontPrefix.hashCode}");
+      "${cacheKey.hashCode}${Get.find<TonoProvider>().bookHash.hashCode}");
 
   @override
   String toString() => '${objectRuntimeType(this, 'AsyncMemoryImage')}'

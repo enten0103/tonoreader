@@ -2,15 +2,18 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:file_picker/file_picker.dart';
+import 'package:get/route_manager.dart';
 import 'package:get/state_manager.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:voidlord/model/book_reader.dart';
-import 'package:voidlord/tono_reader/parser/tono_parser.dart';
-import 'package:voidlord/tono_reader/tool/tono_serializer.dart';
+import 'package:voidlord/pages/index/componets/parse_book_dialog.dart';
 
 class LocalShelfPageController extends GetxController {
   RxList<BookReaderModel> bookLocalModels = <BookReaderModel>[].obs;
+  RxInt current = 0.obs;
+  RxInt total = 0.obs;
+  RxString info = "".obs;
 
   void delete(String id) async {
     var baseDir = await getApplicationDocumentsDirectory();
@@ -27,14 +30,12 @@ class LocalShelfPageController extends GetxController {
     FilePickerResult? result = await FilePicker.platform
         .pickFiles(type: FileType.custom, allowedExtensions: ["epub"]);
     var file = result?.files.first;
-    var parser = await TonoParser.initFormDisk(file!.path!);
-    var tono = await parser.parse();
-    await TonoSerializer.save(tono);
+    await Get.dialog(ParseBookDialog(filePath: file!.path!));
     await init();
   }
 
   init() async {
-    bookLocalModels.clear();
+    var nm = <BookReaderModel>[];
     var baseDir = await getApplicationDocumentsDirectory();
     var bookDir = Directory(p.join(baseDir.path, "book"));
     if (await baseDir.exists()) {
@@ -48,16 +49,55 @@ class LocalShelfPageController extends GetxController {
           String title = baseInfo['title']!;
           String cover =
               p.join(book.path, 'assets', 'image', baseInfo['coverUrl']!);
-          bookLocalModels
-              .add(BookReaderModel(id: id, title: title, coverUrl: cover));
+          nm.add(BookReaderModel(id: id, title: title, coverUrl: cover));
         }
       }
     }
+    mergeListsCustom<BookReaderModel>(bookLocalModels, nm, (a, b) {
+      return a.id == b.id;
+    });
   }
 
   @override
   void onInit() async {
     init();
     super.onInit();
+  }
+}
+
+typedef EqualityCheck<T> = bool Function(T a, T b);
+
+void mergeListsCustom<T>(
+  List<T> current,
+  List<T> target,
+  EqualityCheck<T> equals,
+) {
+  int i = 0;
+  while (i < target.length) {
+    if (i < current.length) {
+      if (equals(current[i], target[i])) {
+        i++;
+        continue;
+      }
+      int foundIndex = -1;
+      for (int j = i; j < current.length; j++) {
+        if (equals(current[j], target[i])) {
+          foundIndex = j;
+          break;
+        }
+      }
+      if (foundIndex != -1) {
+        final T item = current.removeAt(foundIndex);
+        current.insert(i, item);
+      } else {
+        current.insert(i, target[i]);
+      }
+    } else {
+      current.add(target[i]);
+    }
+    i++;
+  }
+  if (current.length > target.length) {
+    current.removeRange(target.length, current.length);
   }
 }

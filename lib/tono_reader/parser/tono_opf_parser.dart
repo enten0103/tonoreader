@@ -4,6 +4,7 @@ import 'package:path/path.dart' as p;
 import 'package:voidlord/tono_reader/model/base/tono.dart';
 import 'package:voidlord/tono_reader/model/base/tono_book_info.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_widget.dart';
+import 'package:voidlord/tono_reader/parser/tono_parse_event.dart';
 import 'package:voidlord/tono_reader/parser/tono_parser.dart';
 import 'package:voidlord/tono_reader/parser/tono_widget_parser.dart';
 import 'package:voidlord/tono_reader/tool/path_tool.dart';
@@ -13,12 +14,14 @@ import 'package:xml/xml.dart';
 
 extension TonoOpfParser on TonoParser {
   Future<Tono> parseOpf() async {
+    onStateChange(TonoParseEvent(info: "opf", currentIndex: 0, totalIndex: 1));
     var currentDir = await provider.getOpf();
     var xmlContent = (await provider.getFileByPath(currentDir))!.toUtf8();
     var document = XmlDocument.parse(xmlContent);
     var manifest = document.findAllElements("manifest").first;
-    var parseItemResult = await parseItem(manifest, currentDir);
     var title = document.findAllElements("dc:title").first.innerText;
+    onStateChange(TonoParseEvent(info: "opf", currentIndex: 1, totalIndex: 1));
+    var parseItemResult = await parseItem(manifest, currentDir);
     TonoBookInfo tonoBookInfo =
         TonoBookInfo(title: title, coverUrl: parseItemResult[4]);
     List<TonoNavItem> tonoNavItems = parseItemResult[3];
@@ -49,7 +52,7 @@ extension TonoOpfParser on TonoParser {
     for (var item in items) {
       if (item.getAttribute('linear') != "no") {
         var idref = item.getAttribute("idref");
-        if (idref != null && idref.endsWith("xhtml")) {
+        if (idref != null) {
           result.add(idmap[idref]!);
         }
       }
@@ -66,11 +69,17 @@ extension TonoOpfParser on TonoParser {
     List<TonoNavItem> navItems = [];
     String coverUrl = "";
     Map<String, String> idmap = {};
-    var items = manifest.findAllElements("item");
-    for (var item in items) {
+    var items = manifest.findAllElements("item").toList();
+    for (int index = 0; index < items.length; index++) {
+      var item = items[index];
       var href = item.getAttribute("href");
       if (href == null) continue;
       var fullPath = currentDir.pathSplicing(href);
+      onStateChange(TonoParseEvent(
+        info: href,
+        currentIndex: index,
+        totalIndex: items.length,
+      ));
       if (href.endsWith("xhtml")) {
         idmap[item.getAttribute("id")!] = fullPath;
         widgets[fullPath] = await parseWidget(fullPath);

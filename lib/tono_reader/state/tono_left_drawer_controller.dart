@@ -1,27 +1,52 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:voidlord/tono_reader/ui/default/comps/book_content.dart';
+import 'package:voidlord/tono_reader/ui/default/comps/book_mark_content.dart';
+import 'package:voidlord/tono_reader/ui/default/comps/book_note_content.dart';
 
 class TonoLeftDrawerController extends GetxController
     with GetSingleTickerProviderStateMixin {
   var scaffoldKey = GlobalKey<ScaffoldState>();
 
-  late PageController pageController = PageController()..addListener(() {});
+  var index = 0;
 
-  late TabController tabController = TabController(length: 3, vsync: this)
-    ..addListener(() {
-      if (tabController.indexIsChanging) {
-        pageController.animateToPage(
-          tabController.index,
-          duration: Duration(milliseconds: 300),
-          curve: Curves.ease,
-        );
-      }
-    });
+  late PageController pageController = PageController();
+
+  late TabController tabController =
+      TabController(length: 3, initialIndex: index, vsync: this)
+        ..addListener(() {
+          if (tabController.indexIsChanging) {
+            index = tabController.index;
+            pageController.animateToPage(
+              tabController.index,
+              duration: Duration(milliseconds: 300),
+              curve: Curves.ease,
+            );
+          }
+        });
+
+  reInit() {
+    pageController = PageController(initialPage: index);
+    tabController.index = index;
+  }
+
+  closeDrawer() {
+    scaffoldKey.currentState?.closeDrawer();
+  }
+
+  openDrawer() {
+    scaffoldKey.currentState?.openDrawer();
+  }
+
+  List<Widget> pages = [
+    BookContent(),
+    BookMarkContent(),
+    BookNoteContent(),
+  ];
 
   @override
-  void dispose() {
+  void onClose() {
     tabController.dispose();
     pageController.dispose();
-    super.dispose();
   }
 }

@@ -16,6 +16,7 @@ extension TonoTextRender on TonoInlineContainerWidget {
       shadows: textShadow == null ? [] : [textShadow!],
       fontSize: fontSize,
       fontFamily: fontFamily.isNotEmpty ? fontFamily[0] : null,
+      letterSpacing: config.wordSpacing,
       fontFamilyFallback: fontFamily,
       height: lineHeight * config.lineSpacing,
       color: color,
@@ -36,7 +37,7 @@ extension TonoTextRender on TonoInlineContainerWidget {
         : TextSpan(children: [
             WidgetSpan(
                 child: SizedBox(
-                    width: (fontSize *
+                    width: ((fontSize + config.wordSpacing) *
                         (textIndent == null
                             ? 0
                             : textIndent! < 0

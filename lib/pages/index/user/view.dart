@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:logger/web.dart';
+import 'package:sqflite/sqflite.dart';
+import 'package:voidlord/model/book_reader_info.dart';
+import 'package:voidlord/repo/database.dart';
 import 'package:voidlord/tono_reader/model/style/tono_style.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_container.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_text.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_widget.dart';
-import 'package:voidlord/tono_reader/tool/vertical_clipper.dart';
 
 class UserPage extends StatelessWidget {
   const UserPage({super.key});
@@ -11,19 +15,21 @@ class UserPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return SafeArea(
         child: Center(
-            child: Container(
+            child: SizedBox(
       width: 200,
-      height: 200,
-      color: Colors.blueAccent,
-      child: ClipRect(
-        clipper: VerticalClipper(),
-        child: UnconstrainedBox(
-            child: Container(
-          width: 300,
-          height: 400,
-          color: Colors.lightGreenAccent,
-        )),
-      ),
+      height: 80,
+      child: ElevatedButton(
+          onPressed: () async {
+            AppDatabase db = Get.find();
+            try {
+              await db.bookInfoDao.insertBookReaderInfo(BookReaderInfo(
+                  bookHash: '1214', bookMarks: [], bookNotes: []));
+            } on DatabaseException catch (e) {
+              Logger logger = Get.find();
+              logger.i(e.runtimeType);
+            }
+          },
+          child: const Text("test")),
     )));
   }
 }

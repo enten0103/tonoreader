@@ -9,7 +9,9 @@ abstract class TonoCssWidget extends StatelessWidget with FlutterCssMixin {
 
   @override
   Widget build(BuildContext context) {
-    flutterStyleMap = context.fcm;
+    try {
+      flutterStyleMap = context.fcm;
+    } catch (_) {}
     return content(context);
   }
 }

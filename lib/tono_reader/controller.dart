@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:voidlord/tono_reader/config.dart';
 import 'package:voidlord/tono_reader/model/base/tono.dart';
+import 'package:voidlord/tono_reader/model/base/tono_location.dart';
 import 'package:voidlord/tono_reader/model/base/tono_type.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_container.dart';
 import 'package:voidlord/tono_reader/render/widget/tono_container_widget.dart';
@@ -34,6 +35,12 @@ class TonoReaderController extends GetxController {
   late TonoProvider tonoDataProvider = Get.find<TonoProvider>();
   late TonoUserDataProvider tonoUserDataProvider =
       Get.find<TonoUserDataProvider>();
+
+  void changeLocation(TonoLocation location) {
+    itemScrollController.jumpTo(
+      index: location.toIndex(),
+    );
+  }
 
   void changeChapter(String id) async {
     var index = tonoDataProvider.xhtmls.indexOf(id);
@@ -71,9 +78,10 @@ class TonoReaderController extends GetxController {
   }
 
   Future init() async {
+    TonoInitializer.init();
     if (tonoType == TonoType.local) {
       var tono = await _initFromDisk();
-      await TonoInitializer.init(tono);
+      await TonoInitializer.load(tono);
       tonoFlager.state.value = LoadingState.success;
     }
     if (tonoType == TonoType.net) {
@@ -84,8 +92,7 @@ class TonoReaderController extends GetxController {
 
   @override
   void onInit() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.immersiveSticky,
-        overlays: []);
+    TonoReaderConfig.init();
     init();
     super.onInit();
   }
@@ -95,10 +102,7 @@ class TonoReaderController extends GetxController {
   }
 
   _initFromNet() {}
+
   @override
-  void onClose() {
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge);
-    tonoUserDataProvider.saveToLocal();
-    super.onClose();
-  }
+  void onClose() => TonoReaderConfig.close();
 }

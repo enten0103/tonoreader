@@ -1,6 +1,7 @@
+import 'dart:convert';
+
 import 'package:html/dom.dart' as dom;
 import 'package:html/parser.dart' as html;
-import 'package:logger/logger.dart';
 import 'package:voidlord/tono_reader/model/parser/tono_style_sheet_block.dart';
 import 'package:voidlord/tono_reader/model/style/tono_style.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_container.dart';
@@ -37,12 +38,11 @@ extension TonoWidgetParser on TonoParser {
   }
 
   Future<TonoWidget> parseWidget(String filePath) async {
-    var logger = Logger();
-    logger.i("filePath:$filePath widget parse start......");
     final htmlContent = await provider.getFileByPath(filePath);
+    String str = utf8.decode(htmlContent!.toList(), allowMalformed: true);
 
     ///获取document
-    var document = html.parse(htmlContent);
+    var document = html.parse(convertSelfClosingTags(str), encoding: "UTF-8");
     var css = await loacCss(document, filePath);
     var htmlElement = document.getElementsByTagName("html").first;
     var result = toContainer(htmlElement, filePath, css, inheritStyles: [
@@ -50,6 +50,18 @@ extension TonoWidgetParser on TonoParser {
     ]);
     addParent(result, null);
     return result;
+  }
+
+  /// flutter_html库存在bug
+  String convertSelfClosingTags(String input) {
+    return input.replaceAllMapped(
+      RegExp(r'<([A-Za-z][\w:-]*)(\s[^>]*?)?\s*/>'),
+      (Match match) {
+        final tag = match.group(1)!;
+        final attributes = match.group(2) ?? '';
+        return '<$tag$attributes></$tag>';
+      },
+    );
   }
 
   void addParent(TonoWidget tw, TonoWidget? parent) {

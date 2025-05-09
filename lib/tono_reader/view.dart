@@ -5,11 +5,11 @@ import 'package:voidlord/tono_reader/model/base/tono_type.dart';
 import 'package:voidlord/tono_reader/state/tono_data_provider.dart';
 import 'package:voidlord/tono_reader/state/tono_flager.dart';
 import 'package:voidlord/tono_reader/state/tono_left_drawer_controller.dart';
-import 'package:voidlord/tono_reader/ui/default/bottom_bar_view.dart';
-import 'package:voidlord/tono_reader/ui/default/left_darwer.dart';
-import 'package:voidlord/tono_reader/ui/default/side_bar_view.dart';
+import 'package:voidlord/tono_reader/ui/default/comps/bottom_bar_view.dart';
+import 'package:voidlord/tono_reader/ui/default/comps/drawers/left_darwer.dart';
+import 'package:voidlord/tono_reader/ui/default/comps/drawers/side_bar_view.dart';
 import 'package:voidlord/tono_reader/ui/default/slide_content_view.dart';
-import 'package:voidlord/tono_reader/ui/default/top_bar_view.dart';
+import 'package:voidlord/tono_reader/ui/default/comps/drawers/top_bar_view.dart';
 import 'package:voidlord/utils/type.dart';
 
 class TonoReader extends StatelessWidget {
@@ -24,9 +24,10 @@ class TonoReader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     var controller = Get.put(TonoReaderController(id: id, tonoType: tonoType));
-    var flager = Get.put(TonoFlager());
-    var dataProvoder = Get.put(TonoProvider());
-    var sideBarController = Get.put(TonoLeftDrawerController());
+    TonoLeftDrawerController sideBarController = Get.find();
+    TonoFlager flager = Get.find();
+    TonoProvider dataProvoder = Get.find();
+
     return Scaffold(
       key: sideBarController.scaffoldKey,
       body: Stack(
@@ -54,7 +55,6 @@ class TonoReader extends StatelessWidget {
                     curve: Curves.easeInOut,
                     child: TopBarView(bookTitle: dataProvoder.title)),
               )),
-          // 底部操作栏的滑动动画
           Positioned(
             left: 0,
             right: 0,

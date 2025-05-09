@@ -8,7 +8,7 @@ extension TonoCssFontFamily on FlutterStyleFromCss {
     var tp = Get.find<TonoProvider>();
     var raw = cssFontFamily.replaceAll("!important", "").replaceAll(" ", "");
     return raw.split(",").map((e) {
-      return tp.fontPrefix + e;
+      return tp.bookHash + e;
     }).toList();
   }
 }

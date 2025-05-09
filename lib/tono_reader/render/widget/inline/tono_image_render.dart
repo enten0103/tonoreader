@@ -11,6 +11,7 @@ import 'package:voidlord/tono_reader/render/state/tono_container_provider.dart';
 import 'package:voidlord/tono_reader/render/widget/tono_inline_container_widget.dart';
 import 'package:voidlord/tono_reader/state/tono_assets_provider.dart';
 import 'package:voidlord/tono_reader/tool/async_memory_image.dart';
+import 'package:voidlord/tono_reader/ui/default/comps/dialog/pic_dialog_view.dart';
 
 extension TonoImageRender on TonoInlineContainerWidget {
   InlineSpan renderImage(TonoImage tonoImage) {
@@ -18,7 +19,8 @@ extension TonoImageRender on TonoInlineContainerWidget {
       tonoImage.css,
       pdisplay: tonoImage.parent?.display,
       tdisplay: "inline",
-      parentSize: Size(Get.mediaQuery.size.width, Get.mediaQuery.size.height),
+      parentSize: Size(Get.mediaQuery.size.width, Get.mediaQuery.size.height)
+          .toPredictSize(),
     ).flutterStyleMap;
 
     return WidgetSpan(
@@ -28,7 +30,7 @@ extension TonoImageRender on TonoInlineContainerWidget {
             fcm: fcm,
             data: tonoImage,
             key: ValueKey(tonoImage.hashCode),
-            parentSize: Rx(Get.mediaQuery.size),
+            psize: Rx(Get.mediaQuery.size.toPredictSize()),
             child: TonoCssSizePaddingWidget(
                 child: TonoImageWidget(
                     key: ValueKey("${tonoImage.hashCode}/1"),
@@ -46,7 +48,11 @@ class TonoImageWidget extends TonoCssWidget {
     var assetsProvider = Get.find<TonoAssetsProvider>();
     final assetId = p.basenameWithoutExtension(tonoImage.url);
     return GestureDetector(
-        onLongPress: () {},
+        onLongPress: () {
+          Get.dialog(PicDialogView(
+              image: AsyncMemoryImage(
+                  assetsProvider.getAssetsById(assetId), assetId)));
+        },
         child: Image(
           key: ValueKey(tonoImage.hashCode),
           gaplessPlayback: true,

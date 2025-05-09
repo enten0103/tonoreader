@@ -57,7 +57,10 @@ class TonoCssSizePaddingWidget extends TonoCssWidget {
 
     var container = AfterLayout(
         callback: (values) {
-          context.parentSize?.value = values.size;
+          if (context.psize.value.height == null &&
+              context.psize.value.width == null) {
+            context.psize.value = values.size.toPredictSize();
+          }
         },
         child: Container(
           padding: padding,

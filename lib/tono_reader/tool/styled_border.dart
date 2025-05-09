@@ -8,7 +8,7 @@ class StyledBorderSide extends BorderSide {
   final BorderCustomStyle borderStyle;
 
   const StyledBorderSide({
-    super.color = const Color(0xFF000000),
+    super.color,
     super.width = 1.0,
     this.borderStyle = BorderCustomStyle.solid,
   });

@@ -1,17 +1,19 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:html/parser.dart';
 
 void main() {
-  testWidgets('MyWidget has a title and message', (tester) async {
-    // Create the widget by telling the tester to build it.
-    await tester.pumpWidget(Directionality(
-        textDirection: TextDirection.ltr,
-        child: Scaffold(
-            body: Container(
-          width: 10,
-          height: 20,
-          color: Colors.greenAccent,
-          child: Text("123"),
-        ))));
+  test('self close html tag parer test', () {
+    var html = '''
+  <html>
+    <body>
+      <div>1</div>
+      <div />
+      <div>2</div>
+    </body>
+  </html>
+''';
+    var document = parse(html);
+    var childlength = document.body?.children.length;
+    expect(childlength, 3);
   });
 }

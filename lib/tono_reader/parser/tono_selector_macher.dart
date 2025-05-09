@@ -43,6 +43,7 @@ extension TonoSelectorMacher on TonoParser {
         continue;
       }
       var rule = ss.split(":");
+      if (rule.length < 2) continue;
       var property = rule[0];
       var value = rule[1];
       if (property == 'margin') {

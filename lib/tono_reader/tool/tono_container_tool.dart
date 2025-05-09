@@ -33,7 +33,6 @@ extension TonoContainerTool on TonoContainer {
             inlineChildren.clear();
           }
           children.add(TonoContainerWidget(
-            key: Key("${child.className}@${child.hashCode}"),
             tonoContainer: child,
           ));
         }

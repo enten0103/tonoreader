@@ -1,50 +1,59 @@
-import 'dart:convert';
-
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:voidlord/model/book_reader_info.dart';
+import 'package:voidlord/model/dao/book_reader_info_dao.dart';
+import 'package:voidlord/model/tono_book_mark.dart';
+import 'package:voidlord/model/tono_book_note.dart';
+import 'package:voidlord/repo/database.dart';
 import 'package:voidlord/tono_reader/model/base/tono_location.dart';
-import 'package:voidlord/tono_reader/model/base/tono_note.dart';
+import 'package:voidlord/tono_reader/state/tono_data_provider.dart';
 
 class TonoUserDataProvider extends GetxController {
-  List<TonoLocation> bookmarks = [];
-  List<TonoNote> notes = [];
+  List<TonoBookMark> bookmarks = [];
+  List<TonoBookNote> booknotes = [];
+  var bookHash = Get.find<TonoProvider>().bookHash;
+  TonoLocation histroy = TonoLocation(xhtmlIndex: 0, elementIndex: 0);
+  BookReaderInfoDao bookInfoDao = Get.find<AppDatabase>().bookInfoDao;
   Future init() async {
     await initFromLocal();
   }
 
   Future initFromLocal() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-    var bookMarksRaw = prefs.getStringList("bookmarks");
-    if (bookMarksRaw != null) {
-      for (var bookMark in bookMarksRaw) {
-        bookmarks.add(TonoLocation.fromMap(json.decode(bookMark)));
-      }
-    }
-    var notesRaw = prefs.getStringList("notes");
-    if (notesRaw != null) {
-      for (var note in notesRaw) {
-        notes.add(TonoNote.fromMap(json.decode(note)));
-      }
+    var bookReaderInfo = await bookInfoDao.findByBookHash(bookHash);
+    if (bookReaderInfo != null) {
+      var bookMarkList = bookReaderInfo.bookMarks;
+      var noteList = bookReaderInfo.bookNotes;
+      bookmarks.addAll(bookMarkList);
+      booknotes.addAll(noteList);
+      histroy = bookReaderInfo.histroy ??
+          TonoLocation(xhtmlIndex: 0, elementIndex: 0);
     }
   }
 
   Future saveToLocal() async {
-    final SharedPreferences prefs = await SharedPreferences.getInstance();
-
-    prefs.setStringList("bookmarks",
-        bookmarks.map((e) => json.encoder.convert(e.toMap())).toList());
-    prefs.setStringList(
-        "notes", notes.map((e) => json.encoder.convert(e.toMap())).toList());
+    var old = await bookInfoDao.findByBookHash(bookHash);
+    var bookInfo = BookReaderInfo(
+      bookHash: bookHash,
+      bookMarks: bookmarks,
+      bookNotes: booknotes,
+    );
+    if (old == null) {
+      bookInfoDao.insertBookReaderInfo(bookInfo);
+    } else {
+      bookInfoDao.updateBookReaderInfo(bookInfo);
+    }
   }
 
   bool isMarked(TonoLocation location) {
     return bookmarks.firstWhereOrNull((e) =>
-                e.elementIndex == location.elementIndex &&
-                e.xhtmlIndex == location.xhtmlIndex) !=
+                e.location.elementIndex == location.elementIndex &&
+                e.location.xhtmlIndex == location.xhtmlIndex) !=
             null ||
-        notes.firstWhereOrNull((e) =>
+        booknotes.firstWhereOrNull((e) =>
                 e.location.elementIndex == location.elementIndex &&
                 e.location.xhtmlIndex == location.elementIndex) !=
             null;
   }
+
+  @override
+  void onClose() => saveToLocal();
 }
