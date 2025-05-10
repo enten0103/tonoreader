@@ -15,7 +15,8 @@ extension TonoCssPadding on FlutterStyleFromCss {
       var parent = (side == "left" || side == "right")
           ? parentSize?.width
           : parentSize?.height;
-      return parseUnit(cssPadding, parent, em);
+      var value = parseUnit(cssPadding, parent, em);
+      return value > 0 ? value : 0;
     }
 
     var left = parsePaddingSide("left");

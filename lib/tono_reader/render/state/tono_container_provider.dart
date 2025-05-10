@@ -52,6 +52,7 @@ class TonoContainerProvider extends InheritedWidget {
       DiagnosticsProperty("predict_size_height", psize.value.height),
     );
 
+    properties.add(DiagnosticsProperty("css node", data.css));
     super.debugFillProperties(properties);
   }
 }

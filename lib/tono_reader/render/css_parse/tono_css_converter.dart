@@ -245,10 +245,7 @@ class FlutterStyleFromCss {
 
   Color? parseRawColor(String? colorStr) {
     if (colorStr == null) return null;
-    final normalized = colorStr
-        .replaceAll(RegExp(r'[#!important]', caseSensitive: false), '')
-        .trim()
-        .toLowerCase();
+    final normalized = colorStr.toValue().toLowerCase();
 
     // 处理颜色名称
     if (_colorNameToHex.containsKey(normalized)) {
@@ -266,14 +263,15 @@ class FlutterStyleFromCss {
 
   Color? _parseHex(String hex) {
     hex = hex.toUpperCase();
-
+    if (hex.startsWith("#")) {
+      hex = hex.replaceFirst("#", "");
+    }
     if (hex.length == 3) {
       hex = hex.split('').map((c) => c + c).join();
       hex = 'FF$hex';
     } else if (hex.length == 6) {
       hex = 'FF$hex';
     }
-
     if (hex.length != 8) return null;
 
     try {

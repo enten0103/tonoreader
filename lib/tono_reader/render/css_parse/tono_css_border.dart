@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:voidlord/tono_reader/render/css_parse/tono_css_converter.dart';
-import 'package:voidlord/tono_reader/tool/color_tool.dart';
 import 'package:voidlord/tono_reader/tool/styled_border.dart';
 
 extension TonoCssBorder on FlutterStyleFromCss {
@@ -23,7 +22,7 @@ extension TonoCssBorder on FlutterStyleFromCss {
           borderWidth == "0%") {
         return StyledBorderSide(width: 0);
       }
-      Color borderColor = Colors.black.applyLightness();
+      Color borderColor = Colors.black;
       if (borderColorStr != null) {
         borderColor = parseColor(borderColorStr) ?? Colors.black;
       }

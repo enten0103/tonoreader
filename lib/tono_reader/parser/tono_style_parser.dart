@@ -55,6 +55,8 @@ extension TonoStyleParser on TonoParser {
             properties.addAll(borderDirectionSegmentation(value, ["top"]));
           } else if (property == "border-bottom") {
             properties.addAll(borderDirectionSegmentation(value, ["bottom"]));
+          } else if (property == "border-color") {
+            properties.addAll(borderColorSegmentation(value));
           } else if (property == "border-style") {
             properties.addAll(borderStyleSegmentation(value));
           } else if (property == "padding") {
@@ -113,6 +115,51 @@ extension TonoStyleParser on TonoParser {
     properties['padding-right'] = right;
     properties['padding-bottom'] = bottom;
     properties['padding-left'] = left;
+    return properties;
+  }
+
+  Map<String, String> borderColorSegmentation(String value) {
+    // 移除前导空格
+    while (value.startsWith(" ")) {
+      value = value.substring(1, value.length);
+    }
+
+    // 按空格分割值
+    final values = value.split(RegExp(r'\s+'));
+    final length = values.length;
+    Map<String, String> properties = {};
+    String top, right, bottom, left;
+
+    // 根据值的数量分配逻辑
+    if (length == 1) {
+      // 1 个值：所有边颜色相同
+      top = right = bottom = left = values[0];
+    } else if (length == 2) {
+      // 2 个值：上下用第一个值，左右用第二个值
+      top = bottom = values[0];
+      right = left = values[1];
+    } else if (length == 3) {
+      // 3 个值：上、左右、下
+      top = values[0];
+      right = left = values[1];
+      bottom = values[2];
+    } else if (length == 4) {
+      // 4 个值：上、右、下、左
+      top = values[0];
+      right = values[1];
+      bottom = values[2];
+      left = values[3];
+    } else {
+      // 无效值数量返回空 Map
+      return properties;
+    }
+
+    // 填充返回值
+    properties['border-top-color'] = top;
+    properties['border-right-color'] = right;
+    properties['border-bottom-color'] = bottom;
+    properties['border-left-color'] = left;
+
     return properties;
   }
 
