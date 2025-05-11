@@ -4,8 +4,10 @@ import 'package:path/path.dart' as p;
 import 'package:voidlord/tono_reader/model/base/tono.dart';
 import 'package:voidlord/tono_reader/model/base/tono_book_info.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_widget.dart';
+import 'package:voidlord/tono_reader/parser/tono_bw_ncx_parser.dart';
 import 'package:voidlord/tono_reader/parser/tono_parse_event.dart';
 import 'package:voidlord/tono_reader/parser/tono_parser.dart';
+import 'package:voidlord/tono_reader/parser/tono_scrollable_window_parser.dart';
 import 'package:voidlord/tono_reader/parser/tono_widget_parser.dart';
 import 'package:voidlord/tono_reader/tool/path_tool.dart';
 import 'package:voidlord/tono_reader/tool/unit8_tool.dart';
@@ -13,9 +15,9 @@ import 'package:voidlord/tono_reader/widget_provider/local_tono_widget_provider.
 import 'package:xml/xml.dart';
 
 extension TonoOpfParser on TonoParser {
-  Future<Tono> parseOpf() async {
+  Future<Tono> parseOpf(String opfPath) async {
     onStateChange(TonoParseEvent(info: "opf", currentIndex: 0, totalIndex: 1));
-    var currentDir = await provider.getOpf();
+    var currentDir = opfPath;
     var xmlContent = (await provider.getFileByPath(currentDir))!.toUtf8();
     var document = XmlDocument.parse(xmlContent);
     var manifest = document.findAllElements("manifest").first;
@@ -36,9 +38,11 @@ extension TonoOpfParser on TonoParser {
       parseItemResult[5],
       currentDir,
     );
+    var scrollDeepth = calcScrollableDeepth(parseItemResult[0], xhtmls);
     return Tono(
       bookInfo: tonoBookInfo,
       navItems: tonoNavItems,
+      deepth: scrollDeepth,
       widgetProvider: ltwp,
       xhtmls: xhtmls,
       hash: provider.hash,
@@ -95,8 +99,13 @@ extension TonoOpfParser on TonoParser {
         fonts[p.basenameWithoutExtension(fullPath)] =
             (await provider.getFileByPath(fullPath))!;
       }
-      if (href.endsWith("ncx")) {
+      if (navItems.isEmpty && href.endsWith("ncx")) {
         navItems.addAll(await parseNcx(fullPath));
+      }
+      if (navItems.isEmpty &&
+          item.getAttribute("properties") == "nav" &&
+          href.endsWith("xhtml")) {
+        navItems.addAll(await parseBwNcx(fullPath));
       }
     }
     return [widgets, images, fonts, navItems, coverUrl, idmap];

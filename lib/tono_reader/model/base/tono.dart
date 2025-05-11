@@ -6,6 +6,7 @@ class Tono {
   const Tono(
       {required this.bookInfo,
       required this.hash,
+      required this.deepth,
       required this.navItems,
       required this.xhtmls,
       required this.widgetProvider});
@@ -24,12 +25,15 @@ class Tono {
   ///布局信息提供器
   final TonoWidgetProvider widgetProvider;
 
+  final int deepth;
+
   Future<Map<String, dynamic>> toMap() async {
     return {
       'bookInfo': bookInfo.toMap(),
       'hash': hash,
       'navItems': navItems.map((item) => item.toMap()).toList(),
       'xhtmls': xhtmls,
+      'deepth': deepth,
       'widgetProvider': await widgetProvider.toMap(),
     };
   }
@@ -38,6 +42,7 @@ class Tono {
     return Tono(
       bookInfo: TonoBookInfo.fromMap(map['bookInfo'] as Map<String, dynamic>),
       hash: map['hash'] as String,
+      deepth: map['deepth'] as int,
       navItems: (map['navItems'] as List)
           .map((item) => TonoNavItem.fromMap(item as Map<String, dynamic>))
           .toList(),

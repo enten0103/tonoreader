@@ -45,7 +45,7 @@ extension TonoWidgetParser on TonoParser {
     var document = html.parse(convertSelfClosingTags(str), encoding: "UTF-8");
     var css = await loacCss(document, filePath);
     var htmlElement = document.getElementsByTagName("html").first;
-    var result = toContainer(htmlElement, filePath, css, inheritStyles: [
+    var result = await toContainer(htmlElement, filePath, css, inheritStyles: [
       TonoStyle(priority: 0, value: "1em", property: "font-size")
     ]);
     addParent(result, null);

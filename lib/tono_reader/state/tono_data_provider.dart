@@ -7,11 +7,13 @@ import 'package:voidlord/tono_reader/model/base/tono_location.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_container.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_widget.dart';
 import 'package:voidlord/tono_reader/state/tono_progresser.dart';
+import 'package:voidlord/tono_reader/tool/tono_container_tool.dart';
 
 class TonoProvider extends GetxController {
   late Tono tono;
   String bookHash = "";
   String title = "";
+  int deepth = 0;
   List<TonoNavItem> navList = [];
   List<TonoWidget> widgets = [];
   List<String> xhtmls = [];
@@ -38,7 +40,7 @@ class TonoProvider extends GetxController {
     for (int i = 0; i < widgets.length; i++) {
       var w = widgets[i];
       if (w is TonoContainer) {
-        var elementCount = (w.children[0] as TonoContainer).children.length;
+        var elementCount = w.getScrollableWidgets(deepth).length;
         progressor.elementSequence.add(elementCount);
         sum += elementCount;
       }
@@ -54,10 +56,7 @@ class TonoProvider extends GetxController {
       count -= progressor.elementSequence[index];
       index++;
     }
-    return (((widgets[index] as TonoContainer).children[0]) as TonoContainer)
-            .children
-            .length ==
-        count + 1;
+    return widgets[index].getScrollableWidgets(deepth).length == count + 1;
   }
 
   TonoWidget getWidgetByElementCount(int count) {
@@ -68,14 +67,14 @@ class TonoProvider extends GetxController {
       count -= progressor.elementSequence[index];
       index++;
     }
-    return (((widgets[index] as TonoContainer).children[0]) as TonoContainer)
-        .children[count] as TonoContainer;
+    return widgets[index].getScrollableWidgets(deepth)[count];
   }
 
   Future init(Tono tono) async {
     this.tono = tono;
     bookHash = tono.hash;
     title = tono.bookInfo.title;
+    deepth = tono.deepth;
     navList.addAll(List.from(tono.navItems));
     xhtmls.addAll(List.from(tono.xhtmls));
     for (var i = 0; i < xhtmls.length; i++) {

@@ -90,20 +90,25 @@ class LocalTonoWidgetProvider extends TonoWidgetProvider {
     // 加载资源文件
     final assetsMap = <String, Uint8List>{};
     var imageDir = Directory(p.join(hashDir.path, "image"));
-    final imageFiles = await imageDir.list(recursive: true).toList();
-    for (final entity in imageFiles) {
-      if (entity is File) {
-        assetsMap[p.basenameWithoutExtension(entity.path)] =
-            await entity.readAsBytes();
+    if (await imageDir.exists()) {
+      final imageFiles = await imageDir.list(recursive: true).toList();
+      for (final entity in imageFiles) {
+        if (entity is File) {
+          assetsMap[p.basenameWithoutExtension(entity.path)] =
+              await entity.readAsBytes();
+        }
       }
     }
+
     final fontsMap = <String, Uint8List>{};
     var fontDir = Directory(p.join(hashDir.path, "font"));
-    final fontsFiles = await fontDir.list(recursive: true).toList();
-    for (final entity in fontsFiles) {
-      if (entity is File) {
-        fontsMap[p.basenameWithoutExtension(entity.path)] =
-            await entity.readAsBytes();
+    if (await fontDir.exists()) {
+      final fontsFiles = await fontDir.list(recursive: true).toList();
+      for (final entity in fontsFiles) {
+        if (entity is File) {
+          fontsMap[p.basenameWithoutExtension(entity.path)] =
+              await entity.readAsBytes();
+        }
       }
     }
 

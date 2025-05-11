@@ -15,6 +15,7 @@ class PicDialogView extends StatelessWidget {
       backgroundColor: Colors.transparent,
       elevation: 19,
       child: PhotoView(
+        enableRotation: true,
         imageProvider: image,
         backgroundDecoration: BoxDecoration(color: Colors.transparent),
       ),

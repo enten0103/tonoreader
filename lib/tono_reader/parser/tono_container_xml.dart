@@ -1,0 +1,19 @@
+import 'package:voidlord/tono_reader/parser/tono_parse_event.dart';
+import 'package:voidlord/tono_reader/parser/tono_parser.dart';
+import 'package:voidlord/tono_reader/tool/unit8_tool.dart';
+import 'package:xml/xml.dart';
+
+extension TonoContainerXml on TonoParser {
+  Future<String> parseContainerXml() async {
+    onStateChange(
+        TonoParseEvent(info: "container.xml", currentIndex: 0, totalIndex: 1));
+    var containerPath = await provider.getContainer();
+    var xmlContent = (await provider.getFileByPath(containerPath))!.toUtf8();
+    var document = XmlDocument.parse(xmlContent);
+    var rootElement = document.findAllElements("rootfile").first;
+    var path = rootElement.getAttribute("full-path")!;
+    onStateChange(
+        TonoParseEvent(info: "container.xml", currentIndex: 1, totalIndex: 1));
+    return path;
+  }
+}

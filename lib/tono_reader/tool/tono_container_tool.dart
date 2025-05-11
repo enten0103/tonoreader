@@ -15,6 +15,14 @@ extension TonoWidgetTool on TonoWidget {
     }
     return this;
   }
+
+  List<TonoWidget> getScrollableWidgets(int deepth) {
+    var widget = this;
+    for (var i = 0; i < deepth; i++) {
+      widget = (widget as TonoContainer).children[0];
+    }
+    return (widget as TonoContainer).children;
+  }
 }
 
 extension TonoContainerTool on TonoContainer {

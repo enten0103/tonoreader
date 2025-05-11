@@ -8,15 +8,16 @@ import 'package:voidlord/tono_reader/parser/tono_parser.dart';
 import 'package:voidlord/tono_reader/parser/tono_selector_macher.dart';
 import 'package:voidlord/tono_reader/parser/widget_parser/img_parser.dart';
 import 'package:voidlord/tono_reader/parser/widget_parser/ruby_parser.dart';
+import 'package:voidlord/tono_reader/parser/widget_parser/svg_parser.dart';
 import 'package:voidlord/tono_reader/tool/css_tool.dart';
 
 extension ContainerParser on TonoParser {
-  TonoWidget toContainer(
+  Future<TonoWidget> toContainer(
     Element element,
     String currentPath,
     List<TonoStyleSheetBlock> css, {
     List<TonoStyle>? inheritStyles,
-  }) {
+  }) async {
     var matchedCss = matchAll(element, css, inheritStyles);
     var theInheritStyle = matchedCss.where((e) {
       return e.property == 'color' ||
@@ -46,6 +47,9 @@ extension ContainerParser on TonoParser {
           } else {
             children.add(TonoText(text: "\n", css: theInheritStyle));
           }
+        } else if (element.localName == "svg") {
+          children.add(await toSvg(element, currentPath, css,
+              inheritStyles: inheritStyles));
         } else if (element.localName == "img") {
           children.add(
               toImg(element, currentPath, css, inheritStyles: inheritStyles));
@@ -57,7 +61,7 @@ extension ContainerParser on TonoParser {
               inheritStyles: theInheritStyle,
             ));
           } else {
-            children.add(toContainer(element, currentPath, css,
+            children.add(await toContainer(element, currentPath, css,
                 inheritStyles: theInheritStyle));
           }
         }

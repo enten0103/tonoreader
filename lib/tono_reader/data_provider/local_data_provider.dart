@@ -55,4 +55,9 @@ class LocalDataProvider extends TonoDataProvider {
       }
     }
   }
+
+  @override
+  Future<String> getContainer() async {
+    return "META-INF/container.xml";
+  }
 }

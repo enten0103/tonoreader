@@ -1,6 +1,7 @@
 import 'package:voidlord/tono_reader/data_provider/local_data_provider.dart';
 import 'package:voidlord/tono_reader/data_provider/tono_data_provider.dart';
 import 'package:voidlord/tono_reader/model/base/tono.dart';
+import 'package:voidlord/tono_reader/parser/tono_container_xml.dart';
 import 'package:voidlord/tono_reader/parser/tono_opf_parser.dart';
 import 'package:voidlord/tono_reader/parser/tono_parse_event.dart';
 
@@ -15,7 +16,8 @@ class TonoParser {
   void Function(TonoParseEvent) onStateChange;
 
   Future<Tono> parse() async {
-    return await parseOpf();
+    var rootFilePath = await parseContainerXml();
+    return await parseOpf(rootFilePath);
   }
 
   static Future<TonoParser> initFormDisk(

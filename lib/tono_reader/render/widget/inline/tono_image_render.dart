@@ -48,7 +48,7 @@ class TonoImageWidget extends TonoCssWidget {
     var assetsProvider = Get.find<TonoAssetsProvider>();
     final assetId = p.basenameWithoutExtension(tonoImage.url);
     return GestureDetector(
-        onLongPress: () {
+        onTap: () {
           Get.dialog(PicDialogView(
               image: AsyncMemoryImage(
                   assetsProvider.getAssetsById(assetId), assetId)));
