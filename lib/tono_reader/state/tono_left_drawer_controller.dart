@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:voidlord/tono_reader/ui/default/comps/book_content.dart';
 import 'package:voidlord/tono_reader/ui/default/comps/book_mark_content.dart';
-import 'package:voidlord/tono_reader/ui/default/comps/book_note_content.dart';
 
 class TonoLeftDrawerController extends GetxController
     with GetSingleTickerProviderStateMixin {
@@ -13,7 +12,7 @@ class TonoLeftDrawerController extends GetxController
   late PageController pageController = PageController();
 
   late TabController tabController =
-      TabController(length: 3, initialIndex: index, vsync: this)
+      TabController(length: 2, initialIndex: index, vsync: this)
         ..addListener(() {
           if (tabController.indexIsChanging) {
             index = tabController.index;
@@ -41,7 +40,6 @@ class TonoLeftDrawerController extends GetxController
   List<Widget> pages = [
     BookContent(),
     BookMarkContent(),
-    BookNoteContent(),
   ];
 
   @override

@@ -1,13 +1,12 @@
 import 'dart:convert';
 
-///ApifoxModel
+import 'package:voidlord/model/book_info.dart';
+
 class BookDetailModel {
+  final String id;
   final BookDetailAbout? about;
   final BookDetailChapter? chapter;
   final BookDetailHead? head;
-
-  ///ID 编号
-  final String id;
   final BookDetailSeries? series;
   final BookDetailStatistics? statistics;
 
@@ -55,14 +54,18 @@ class BookDetailModel {
 
 ///book_detail_about
 class BookDetailAbout {
+  final String id;
+
   ///标签
   final List<BookDetailAboutRow> info;
 
   ///标签
   final List<BookTag> tags;
+
   final String value;
 
   BookDetailAbout({
+    required this.id,
     required this.info,
     required this.tags,
     required this.value,
@@ -74,6 +77,7 @@ class BookDetailAbout {
   String toJson() => json.encode(toMap());
 
   factory BookDetailAbout.fromMap(Map<String, dynamic> json) => BookDetailAbout(
+        id: json["id"],
         info: List<BookDetailAboutRow>.from(
             json["info"].map((x) => BookDetailAboutRow.fromMap(x))),
         tags: List<BookTag>.from(json["tags"].map((x) => BookTag.fromMap(x))),
@@ -81,6 +85,7 @@ class BookDetailAbout {
       );
 
   Map<String, dynamic> toMap() => {
+        "id": id,
         "info": List<dynamic>.from(info.map((x) => x.toMap())),
         "tags": List<dynamic>.from(tags.map((x) => x.toMap())),
         "value": value,
@@ -230,16 +235,18 @@ class BookChapter {
 
 ///book_detail_head
 class BookDetailHead {
+  final String id;
   final Author? author;
   final List<String>? customize;
   final Publisher? publisher;
-  final Title title;
+  final String title;
 
   BookDetailHead({
+    required this.id,
+    required this.title,
     this.author,
     this.customize,
     this.publisher,
-    required this.title,
   });
 
   factory BookDetailHead.fromJson(String str) =>
@@ -248,6 +255,7 @@ class BookDetailHead {
   String toJson() => json.encode(toMap());
 
   factory BookDetailHead.fromMap(Map<String, dynamic> json) => BookDetailHead(
+        id: json["id"],
         author: json["author"] == null ? null : Author.fromMap(json["author"]),
         customize: json["customize"] == null
             ? []
@@ -255,25 +263,26 @@ class BookDetailHead {
         publisher: json["publisher"] == null
             ? null
             : Publisher.fromMap(json["publisher"]),
-        title: Title.fromMap(json["title"]),
+        title: json["title"],
       );
 
   Map<String, dynamic> toMap() => {
+        "id": id,
         "author": author?.toMap(),
         "customize": customize == null
             ? []
             : List<dynamic>.from(customize!.map((x) => x)),
         "publisher": publisher?.toMap(),
-        "title": title.toMap(),
+        "title": title,
       };
 }
 
 class Author {
-  final String? link;
   final String value;
+  final String id;
 
   Author({
-    this.link,
+    required this.id,
     required this.value,
   });
 
@@ -282,22 +291,22 @@ class Author {
   String toJson() => json.encode(toMap());
 
   factory Author.fromMap(Map<String, dynamic> json) => Author(
-        link: json["link"],
+        id: json["id"],
         value: json["value"],
       );
 
   Map<String, dynamic> toMap() => {
-        "link": link,
+        "id": id,
         "value": value,
       };
 }
 
 class Publisher {
-  final String? link;
   final String value;
+  final String id;
 
   Publisher({
-    this.link,
+    required this.id,
     required this.value,
   });
 
@@ -306,46 +315,19 @@ class Publisher {
   String toJson() => json.encode(toMap());
 
   factory Publisher.fromMap(Map<String, dynamic> json) => Publisher(
-        link: json["link"],
+        id: json["id"],
         value: json["value"],
       );
 
   Map<String, dynamic> toMap() => {
-        "link": link,
+        "id": id,
         "value": value,
       };
 }
 
-class Title {
-  final String? link;
-  final String value;
-
-  Title({
-    this.link,
-    required this.value,
-  });
-
-  factory Title.fromJson(String str) => Title.fromMap(json.decode(str));
-
-  String toJson() => json.encode(toMap());
-
-  factory Title.fromMap(Map<String, dynamic> json) => Title(
-        link: json["link"],
-        value: json["value"],
-      );
-
-  Map<String, dynamic> toMap() => {
-        "link": link,
-        "value": value,
-      };
-}
-
-///book_detail_series
 class BookDetailSeries {
-  final List<Book> books;
-
-  ///ID 编号
   final String id;
+  final List<BookInfoModel> books;
   final String title;
 
   BookDetailSeries({
@@ -361,7 +343,8 @@ class BookDetailSeries {
 
   factory BookDetailSeries.fromMap(Map<String, dynamic> json) =>
       BookDetailSeries(
-        books: List<Book>.from(json["books"].map((x) => Book.fromMap(x))),
+        books: List<BookInfoModel>.from(
+            json["books"].map((x) => BookInfoModel.fromJson(x))),
         id: json["id"],
         title: json["title"],
       );
@@ -373,40 +356,9 @@ class BookDetailSeries {
       };
 }
 
-class Book {
-  final String coverUrl;
-
-  ///ID 编号
-  final String id;
-
-  ///名称
-  final String title;
-
-  Book({
-    required this.coverUrl,
-    required this.id,
-    required this.title,
-  });
-
-  factory Book.fromJson(String str) => Book.fromMap(json.decode(str));
-
-  String toJson() => json.encode(toMap());
-
-  factory Book.fromMap(Map<String, dynamic> json) => Book(
-        coverUrl: json["coverUrl"],
-        id: json["id"],
-        title: json["title"],
-      );
-
-  Map<String, dynamic> toMap() => {
-        "coverUrl": coverUrl,
-        "id": id,
-        "title": title,
-      };
-}
-
 ///book_detail_statistics
 class BookDetailStatistics {
+  final String id;
   final int collections;
   final int comments;
   final bool hasCollected;
@@ -414,6 +366,7 @@ class BookDetailStatistics {
   final String type;
 
   BookDetailStatistics({
+    required this.id,
     required this.collections,
     required this.comments,
     required this.hasCollected,
@@ -428,6 +381,7 @@ class BookDetailStatistics {
 
   factory BookDetailStatistics.fromMap(Map<String, dynamic> json) =>
       BookDetailStatistics(
+        id: json["id"],
         collections: json["collections"],
         comments: json["comments"],
         hasCollected: json["hasCollected"],
@@ -436,6 +390,7 @@ class BookDetailStatistics {
       );
 
   Map<String, dynamic> toMap() => {
+        "id": id,
         "collections": collections,
         "comments": comments,
         "hasCollected": hasCollected,

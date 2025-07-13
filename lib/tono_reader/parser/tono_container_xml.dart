@@ -7,8 +7,8 @@ extension TonoContainerXml on TonoParser {
   Future<String> parseContainerXml() async {
     onStateChange(
         TonoParseEvent(info: "container.xml", currentIndex: 0, totalIndex: 1));
-    var containerPath = await provider.getContainer();
-    var xmlContent = (await provider.getFileByPath(containerPath))!.toUtf8();
+    var xmlContent =
+        (await provider.getFileByPath("META-INF/container.xml"))!.toUtf8();
     var document = XmlDocument.parse(xmlContent);
     var rootElement = document.findAllElements("rootfile").first;
     var path = rootElement.getAttribute("full-path")!;

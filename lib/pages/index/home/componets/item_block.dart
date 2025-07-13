@@ -1,6 +1,7 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:voidlord/model/book_block.dart';
-import 'package:voidlord/pages/index/home/componets/book_info.dart';
+import 'package:voidlord/components/book_info.dart';
 
 class ItemBlock extends StatelessWidget {
   const ItemBlock({super.key, required this.bookBlockModel});
@@ -50,7 +51,19 @@ class ItemBlock extends StatelessWidget {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceAround,
       children: currentBooks.map((book) {
-        return BookInfo(bookInfoModel: book);
+        return BookInfo(
+          bookInfoModel: book,
+          image: CachedNetworkImage(
+            imageUrl: book.coverUrl,
+            fadeInDuration: Duration(microseconds: 0),
+            fadeOutDuration: Duration(microseconds: 0),
+            fit: BoxFit.cover,
+            placeholder: (context, url) => Center(
+              child: CircularProgressIndicator(),
+            ),
+            errorWidget: (context, url, error) => Icon(Icons.error),
+          ),
+        );
       }).toList(),
     );
   }

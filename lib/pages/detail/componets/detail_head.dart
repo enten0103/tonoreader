@@ -15,7 +15,7 @@ class DetailHead extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          bookDetailHead.title.value,
+          bookDetailHead.title,
           style: TextStyle(
             fontSize: 24,
             fontWeight: FontWeight.bold,

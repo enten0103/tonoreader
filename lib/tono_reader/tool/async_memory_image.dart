@@ -47,9 +47,17 @@ class AsyncMemoryImage extends ImageProvider<AsyncMemoryImage> {
     return decode(buffer);
   }
 
+  int _generateHash() {
+    try {
+      return int.parse(
+          "${cacheKey.hashCode}${Get.find<TonoProvider>().bookHash.hashCode}");
+    } catch (e) {
+      return cacheKey.hashCode;
+    }
+  }
+
   @override
-  int get hashCode => int.parse(
-      "${cacheKey.hashCode}${Get.find<TonoProvider>().bookHash.hashCode}");
+  int get hashCode => _generateHash();
 
   @override
   String toString() => '${objectRuntimeType(this, 'AsyncMemoryImage')}'

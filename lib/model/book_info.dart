@@ -1,10 +1,11 @@
 class BookInfoModel {
-  BookInfoModel(
-      {required this.id,
-      required this.coverUrl,
-      required this.title,
-      this.subTitle,
-      this.ssubTitle});
+  BookInfoModel({
+    required this.id,
+    required this.coverUrl,
+    required this.title,
+    this.subTitle,
+    this.ssubTitle,
+  });
   String id;
   String coverUrl;
   String title;
@@ -19,5 +20,14 @@ class BookInfoModel {
       subTitle: json["subTitle"] as String,
       ssubTitle: json["ssubTitle"] as String,
     );
+  }
+  toMap() {
+    return {
+      'id': id,
+      'coverUrl': coverUrl,
+      'title': title,
+      'subTitle': subTitle,
+      'ssubTitle': ssubTitle,
+    };
   }
 }

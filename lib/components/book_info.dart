@@ -1,4 +1,3 @@
-import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get_core/get_core.dart';
 import 'package:get/get_navigation/src/extension_navigation.dart';
@@ -6,8 +5,13 @@ import 'package:voidlord/model/book_info.dart';
 import 'package:voidlord/routes/void_routers.dart';
 
 class BookInfo extends StatelessWidget {
-  const BookInfo({super.key, required this.bookInfoModel});
+  const BookInfo({
+    super.key,
+    required this.bookInfoModel,
+    required this.image,
+  });
   final BookInfoModel bookInfoModel;
+  final Widget image;
 
   @override
   Widget build(BuildContext context) {
@@ -32,17 +36,7 @@ class BookInfo extends StatelessWidget {
                       tag: bookInfoModel.id,
                       child: ClipRRect(
                           borderRadius: BorderRadius.circular(8), // 圆角裁剪
-                          child: CachedNetworkImage(
-                            imageUrl: bookInfoModel.coverUrl,
-                            fadeInDuration: Duration(microseconds: 0),
-                            fadeOutDuration: Duration(microseconds: 0),
-                            fit: BoxFit.cover,
-                            placeholder: (context, url) => Center(
-                              child: CircularProgressIndicator(),
-                            ),
-                            errorWidget: (context, url, error) =>
-                                Icon(Icons.error),
-                          ))),
+                          child: image)),
                 ))),
         const SizedBox(height: 8),
         SizedBox(

@@ -158,7 +158,7 @@ extension TonoSelectorMacher on TonoParser {
               return e.property == k;
             });
             if (p.isNotEmpty) {
-              ///字号继承 复杂
+              ///字号继承 复杂,建议重写
               if (k == 'font-size') {
                 v = v.replaceAll("!important", "");
                 if (v.endsWith("em") && p.first.value.endsWith("em")) {

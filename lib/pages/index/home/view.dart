@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:voidlord/componets/loading_block.dart';
+import 'package:voidlord/components/loading_block.dart';
 import 'package:voidlord/model/book_block.dart';
 import 'package:voidlord/pages/index/home/componets/item_block.dart';
 import 'package:voidlord/pages/index/home/controller.dart';

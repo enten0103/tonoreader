@@ -30,11 +30,6 @@ class LocalDataProvider extends TonoDataProvider {
   String get hash => _hash;
 
   @override
-  Future<String> getOpf() async {
-    return "OEBPS/content.opf";
-  }
-
-  @override
   Future<Uint8List?> getFileByPath(String path) async {
     return _fileMap[path];
   }
@@ -54,10 +49,5 @@ class LocalDataProvider extends TonoDataProvider {
         _fileMap[entry.name] = entry.readBytes()!;
       }
     }
-  }
-
-  @override
-  Future<String> getContainer() async {
-    return "META-INF/container.xml";
   }
 }

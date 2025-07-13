@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:voidlord/componets/expan_box.dart';
+import 'package:voidlord/components/expan_box.dart';
 import 'package:voidlord/model/book_detail.dart';
 
 class DetailChapter extends StatelessWidget {

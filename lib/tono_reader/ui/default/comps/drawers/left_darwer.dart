@@ -19,7 +19,6 @@ class LeftDarwer extends GetView<TonoLeftDrawerController> {
             tabs: [
               Text("目录", style: TextStyle(fontSize: 16)),
               Text("书签", style: TextStyle(fontSize: 16)),
-              Text("笔记", style: TextStyle(fontSize: 16)),
             ]),
         Expanded(
           child: PageView(

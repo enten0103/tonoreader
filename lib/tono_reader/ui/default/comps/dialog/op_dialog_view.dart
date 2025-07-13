@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:voidlord/model/tono_book_mark.dart';
 import 'package:voidlord/tono_reader/model/base/tono_location.dart';
 import 'package:voidlord/tono_reader/state/tono_data_provider.dart';
-import 'package:voidlord/tono_reader/state/tono_left_drawer_controller.dart';
 import 'package:voidlord/tono_reader/state/tono_user_data_provider.dart';
 import 'package:voidlord/tono_reader/tool/tono_container_stringify.dart';
 
@@ -75,8 +74,6 @@ class OpDialogView extends StatelessWidget {
                     icon: Obx(() => !expended.value
                         ? Icon(Icons.fullscreen)
                         : Icon(Icons.fullscreen_exit))),
-                IconButton(
-                    onPressed: () {}, icon: Icon(Icons.g_translate_outlined)),
                 IconButton(onPressed: () {
                   isMarked.value = !isMarked.value;
                   if (isMarked.value == true) {
@@ -98,15 +95,6 @@ class OpDialogView extends StatelessWidget {
                     return Icon(Icons.bookmark_add_outlined);
                   }
                 })),
-                IconButton(
-                    onPressed: () async {
-                      Get.back();
-                      Get.find<TonoLeftDrawerController>()
-                          .scaffoldKey
-                          .currentState
-                          ?.openDrawer();
-                    },
-                    icon: Icon(Icons.edit_note_outlined)),
                 IconButton(
                     onPressed: () {
                       Clipboard.setData(ClipboardData(

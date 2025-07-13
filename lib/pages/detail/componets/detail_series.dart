@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get_core/get_core.dart';
 import 'package:get/get_navigation/get_navigation.dart';
-import 'package:voidlord/componets/book_cover.dart';
+import 'package:voidlord/components/book_cover.dart';
 import 'package:voidlord/model/book_detail.dart';
 
 class DetailSeries extends StatelessWidget {

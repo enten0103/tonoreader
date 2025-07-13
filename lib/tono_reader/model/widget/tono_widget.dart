@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:voidlord/tono_reader/model/style/tono_style.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_container.dart';
 import 'package:voidlord/tono_reader/model/widget/tono_image.dart';
@@ -17,7 +16,6 @@ abstract class TonoWidget {
   List<TonoStyle> css;
   String className;
   String? display;
-  GlobalKey? sizedKey;
   Map<String, dynamic> extra = {};
 
   Map<String, dynamic> toMap();

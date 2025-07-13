@@ -3,7 +3,7 @@ import 'package:get/get_instance/src/extension_instance.dart';
 import 'package:get/get_state_manager/get_state_manager.dart';
 import 'package:get/route_manager.dart';
 import 'package:logger/logger.dart';
-import 'package:voidlord/componets/book_cover.dart';
+import 'package:voidlord/components/book_cover.dart';
 import 'package:voidlord/pages/index/shelf/subpage/local/controller.dart';
 import 'package:voidlord/routes/void_routers.dart';
 

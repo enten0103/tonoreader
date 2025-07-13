@@ -17,6 +17,10 @@ class Setting {
     loadColorTheme();
   }
 
+  static void setDefaultBinding() {
+    Get.lazyPut(() => SharedPreferences.getInstance());
+  }
+
   static void loadColorTheme() async {
     final prefs = await SharedPreferences.getInstance();
     var a = prefs.getInt("a");

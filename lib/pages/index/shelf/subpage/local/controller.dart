@@ -7,7 +7,8 @@ import 'package:get/state_manager.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'package:voidlord/model/book_reader.dart';
-import 'package:voidlord/pages/index/componets/parse_book_dialog.dart';
+import 'package:voidlord/pages/index/components/parse_book_dialog.dart';
+import 'package:voidlord/utils/list_tool.dart';
 
 class LocalShelfPageController extends GetxController {
   RxList<BookReaderModel> bookLocalModels = <BookReaderModel>[].obs;
@@ -62,42 +63,5 @@ class LocalShelfPageController extends GetxController {
   void onInit() async {
     init();
     super.onInit();
-  }
-}
-
-typedef EqualityCheck<T> = bool Function(T a, T b);
-
-void mergeListsCustom<T>(
-  List<T> current,
-  List<T> target,
-  EqualityCheck<T> equals,
-) {
-  int i = 0;
-  while (i < target.length) {
-    if (i < current.length) {
-      if (equals(current[i], target[i])) {
-        i++;
-        continue;
-      }
-      int foundIndex = -1;
-      for (int j = i; j < current.length; j++) {
-        if (equals(current[j], target[i])) {
-          foundIndex = j;
-          break;
-        }
-      }
-      if (foundIndex != -1) {
-        final T item = current.removeAt(foundIndex);
-        current.insert(i, item);
-      } else {
-        current.insert(i, target[i]);
-      }
-    } else {
-      current.add(target[i]);
-    }
-    i++;
-  }
-  if (current.length > target.length) {
-    current.removeRange(target.length, current.length);
   }
 }

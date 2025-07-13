@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:voidlord/pages/index/componets/salomon_botton_bar.dart';
+import 'package:voidlord/pages/index/components/salomon_botton_bar.dart';
 import 'package:voidlord/pages/index/controller.dart';
 
 class IndexPage extends StatelessWidget {

@@ -20,6 +20,6 @@ class Voidlord extends StatelessWidget {
       ),
       getPages: VoidRouters.getPages,
       onInit: Setting.apply,
-      initialBinding: DefaultBing(),
+      initialBinding: DefaultBinding(),
       initialRoute: VoidRouters.indexPage);
 }

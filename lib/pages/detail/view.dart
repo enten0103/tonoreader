@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:voidlord/componets/book_cover.dart';
-import 'package:voidlord/componets/loading_block.dart';
+import 'package:voidlord/components/book_cover.dart';
+import 'package:voidlord/components/loading_block.dart';
 import 'package:voidlord/model/book_info.dart';
 import 'package:voidlord/pages/detail/componets/detail_about.dart';
 import 'package:voidlord/pages/detail/componets/detail_action.dart';
