@@ -4,15 +4,13 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 
 class BookCover extends StatelessWidget {
-  const BookCover({super.key, required this.id, required this.url, this.onTap});
+  const BookCover({super.key, required this.id, required this.url});
   final String id;
   final String url;
-  final void Function()? onTap;
 
   @override
   Widget build(BuildContext context) {
     return InkWell(
-        onTap: onTap,
         child: PhysicalModel(
             elevation: 1,
             borderRadius: BorderRadius.circular(8),

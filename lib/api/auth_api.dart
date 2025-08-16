@@ -3,28 +3,33 @@ import 'package:voidlord/exception/auth_exception.dart';
 import 'package:voidlord/model/dto/auth_dto.dart';
 
 extension AuthApi on Api {
-  Future<AuthResponse> register(String username, String password) async {
-    final response = await client.post("/register", data: {
+  Future<AuthResponse> register(
+      String username, String email, String password) async {
+    final response = await client.post("/auth/register", data: {
       "username": username,
+      "email": email,
       "password": password,
     });
-    if (response.statusCode != 200) {
-      if (response.data['code'] == 1001) {
-        throw UserNameHasBeanUsedException();
-      }
-      throw Exception('Failed to register');
+    // 新接口：201 创建成功；冲突 409
+    if (response.statusCode == 201) {
+      // 返回 LoginResponseDto: { access_token, user: { id, username, email, ... } }
+      return AuthResponse.fromLoginResponse(response.data);
     }
-    return AuthResponse.fromJson(response.data['data']);
+    if (response.statusCode == 409) {
+      throw UserNameHasBeanUsedException();
+    }
+    throw Exception('Failed to register');
   }
 
   Future<String> login(String username, String password) async {
-    final response = await client.post("/login", data: {
+    final response = await client.post("/auth/login", data: {
       "username": username,
       "password": password,
     });
-    if (response.statusCode != 200) {
-      throw Exception('账号或密码错误');
+    // 新接口：201 登录成功；401 失败
+    if (response.statusCode == 201) {
+      return response.data['access_token'] as String;
     }
-    return response.data['data'] as String;
+    throw Exception('账号或密码错误');
   }
 }

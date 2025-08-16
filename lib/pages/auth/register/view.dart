@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:voidlord/pages/auth/login/controller.dart';
 import 'package:voidlord/exception/auth_exception.dart';
 import 'package:voidlord/pages/auth/register/controller.dart';
 import 'package:voidlord/routes/void_routers.dart';
@@ -304,6 +305,10 @@ class RegisterPage extends GetView<RegisterController> {
 
     try {
       await controller.register(username, email, password);
+      // 确保旧的登录控制器被释放，避免复用已 dispose 的 TextEditingController
+      if (Get.isRegistered<LoginController>()) {
+        Get.delete<LoginController>(force: true);
+      }
       Get.offAllNamed(VoidRouters.loginPage);
       Get.snackbar(
         '注册成功',

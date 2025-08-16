@@ -20,9 +20,10 @@ class RegisterController extends GetxController {
       isRegistering.value = true;
       errorMessage.value = '';
       Api api = Get.find<Api>();
-      await api.register(username, password);
+      await api.register(username, email, password);
       isRegistering.value = false;
     } catch (e) {
+      print(e.toString());
       errorMessage.value = e.toString();
       rethrow;
     } finally {

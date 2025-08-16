@@ -3,7 +3,9 @@ import 'package:get/get_core/get_core.dart';
 import 'package:get/get_instance/get_instance.dart';
 import 'package:voidlord/controller/auth_controller.dart';
 
-var baseUrl = "http://192.168.151.111:3000/api/v1";
+// 新后端基础地址（OpenAPI 来源 http://localhost:3000/api-json）
+// 如需切换环境，可将此配置改为从持久化或构建环境读取。
+var baseUrl = "http://192.168.1.103:3000";
 
 class Api {
   final Dio client = Dio();
@@ -24,7 +26,9 @@ class AuthInterceptor extends Interceptor {
   ) {
     AuthController authController = Get.find();
     final token = authController.token;
-    options.headers['Authorization'] = 'Bearer $token';
+    if (token.isNotEmpty) {
+      options.headers['Authorization'] = 'Bearer $token';
+    }
     handler.next(options);
   }
 }

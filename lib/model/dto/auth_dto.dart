@@ -44,4 +44,20 @@ class AuthResponse {
       username: json['username'] as String,
     );
   }
+
+  /// 兼容新后端登录/注册返回结构：
+  /// {
+  ///   "access_token": "...",
+  ///   "user": { "id": 1, "username": "john_doe", ... }
+  /// }
+  static AuthResponse fromLoginResponse(Map<String, dynamic> json) {
+    final user = json['user'] as Map<String, dynamic>?;
+    if (user == null) {
+      throw ArgumentError('Invalid login response: missing user');
+    }
+    return AuthResponse(
+      id: '${user['id']}',
+      username: user['username'] as String,
+    );
+  }
 }
