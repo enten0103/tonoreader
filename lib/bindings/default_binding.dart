@@ -6,13 +6,12 @@ import 'package:voidlord/api/index.dart';
 import 'package:voidlord/controller/auth_controller.dart';
 import 'package:voidlord/repo/database.dart';
 
-class DefaultBinding implements Bindings {
-  @override
-  void dependencies() async {
+class DefaultBinding {
+  Future<void> dependencies() async {
+    await Get.putAsync(() async => await AppDatabase.getInstance());
+    await Get.putAsync(() async => await SharedPreferences.getInstance());
     Get.lazyPut(() => Api());
     Get.lazyPut(() => Logger());
     Get.lazyPut(() => AuthController());
-    await Get.putAsync(() => AppDatabase.getInstance());
-    await Get.putAsync(() => SharedPreferences.getInstance());
   }
 }

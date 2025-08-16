@@ -80,15 +80,27 @@ class AuthController extends GetxController {
   }
 
   void _restoreUser() {
-    try {
-      if (!Get.isRegistered<SharedPreferences>()) return;
-      final prefs = Get.find<SharedPreferences>();
-      final id = prefs.getInt('user_id');
-      final username = prefs.getString('user_username');
-      if (id != null && username != null) {
-        final email = prefs.getString('user_email');
-        user.value = LoginUser(id: id, username: username, email: email);
-      }
-    } catch (_) {}
+    final prefs = Get.find<SharedPreferences>();
+    final id = prefs.getInt('user_id');
+    final username = prefs.getString('user_username');
+    if (id != null && username != null) {
+      final email = prefs.getString('user_email');
+      user.value = LoginUser(id: id, username: username, email: email);
+    }
+  }
+
+  /// 在应用启动时调用：尽力恢复用户并检查权限（等待 SharedPreferences 最多约1秒）。
+  Future<void> ensureStartupChecked() async {
+    // 若已经有用户，直接检查
+    if (user.value != null) {
+      await checkPermissions();
+      return;
+    }
+
+    _restoreUser();
+
+    if (token.isNotEmpty && user.value != null) {
+      await checkPermissions();
+    }
   }
 }

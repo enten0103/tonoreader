@@ -4,7 +4,11 @@ import 'package:voidlord/bindings/default_binding.dart';
 import 'package:voidlord/routes/void_routers.dart';
 import 'package:voidlord/utils/setting.dart';
 
-void main() => runApp(const Voidlord());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await DefaultBinding().dependencies();
+  runApp(const Voidlord());
+}
 
 class Voidlord extends StatelessWidget {
   const Voidlord({super.key});
@@ -20,6 +24,5 @@ class Voidlord extends StatelessWidget {
       ),
       getPages: VoidRouters.getPages,
       onInit: Setting.apply,
-      initialBinding: DefaultBinding(),
       initialRoute: VoidRouters.indexPage);
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:voidlord/controller/auth_controller.dart';
 import 'package:voidlord/pages/admin/view.dart';
+import 'package:voidlord/pages/admin/controller.dart';
 import 'package:voidlord/pages/index/home/view.dart';
 import 'package:voidlord/pages/index/shelf/view.dart';
 import 'package:voidlord/pages/index/user/view.dart';
@@ -19,13 +20,21 @@ class IndexController extends GetxController {
     ever<bool>(auth.isAdmin, (_) => _buildPages());
   }
 
+  @override
+  void onReady() {
+    super.onReady();
+    // 应用重启后，确保执行一次权限检查（等待存储恢复完毕）
+    final auth = Get.find<AuthController>();
+    auth.ensureStartupChecked();
+  }
+
   void _buildPages() {
     final auth = Get.find<AuthController>();
     final admin = auth.isAdmin.value;
     final newPages = <Widget>[
       HomePage(),
       ShelfPage(),
-      if (admin) const AdminPage(),
+      if (admin) _ensureAdminPage(),
       UserPage(),
     ];
 
@@ -35,5 +44,12 @@ class IndexController extends GetxController {
     if (oldIndex >= pages.length) {
       selectIndex.value = pages.length - 1;
     }
+  }
+
+  Widget _ensureAdminPage() {
+    if (!Get.isRegistered<AdminController>()) {
+      Get.put(AdminController());
+    }
+    return const AdminPage();
   }
 }
