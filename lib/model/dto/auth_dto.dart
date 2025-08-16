@@ -61,3 +61,33 @@ class AuthResponse {
     );
   }
 }
+
+class LoginResponseData {
+  final String accessToken;
+  final LoginUser user;
+
+  LoginResponseData({required this.accessToken, required this.user});
+
+  factory LoginResponseData.fromJson(Map<String, dynamic> json) {
+    return LoginResponseData(
+      accessToken: json['access_token'] as String,
+      user: LoginUser.fromJson(json['user'] as Map<String, dynamic>),
+    );
+  }
+}
+
+class LoginUser {
+  final int id;
+  final String username;
+  final String? email;
+
+  LoginUser({required this.id, required this.username, this.email});
+
+  factory LoginUser.fromJson(Map<String, dynamic> json) {
+    return LoginUser(
+      id: (json['id'] as num).toInt(),
+      username: json['username'] as String,
+      email: json['email'] as String?,
+    );
+  }
+}

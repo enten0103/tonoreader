@@ -21,14 +21,14 @@ extension AuthApi on Api {
     throw Exception('Failed to register');
   }
 
-  Future<String> login(String username, String password) async {
+  Future<LoginResponseData> login(String username, String password) async {
     final response = await client.post("/auth/login", data: {
       "username": username,
       "password": password,
     });
     // 新接口：201 登录成功；401 失败
     if (response.statusCode == 201) {
-      return response.data['access_token'] as String;
+      return LoginResponseData.fromJson(response.data as Map<String, dynamic>);
     }
     throw Exception('账号或密码错误');
   }

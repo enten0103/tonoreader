@@ -20,8 +20,8 @@ class LoginController extends GetxController {
       }
       Api api = Get.find();
       AuthController authController = Get.find();
-      var token = await api.login(username, password);
-      authController.token = token;
+      final data = await api.login(username, password);
+      await authController.handleLogin(data);
     } catch (e) {
       errorMessage.value = "账号或密码错误";
       rethrow;
