@@ -89,14 +89,11 @@ class AuthController extends GetxController {
     }
   }
 
-  /// 在应用启动时调用：尽力恢复用户并检查权限（等待 SharedPreferences 最多约1秒）。
   Future<void> ensureStartupChecked() async {
-    // 若已经有用户，直接检查
     if (user.value != null) {
       await checkPermissions();
       return;
     }
-
     _restoreUser();
 
     if (token.isNotEmpty && user.value != null) {

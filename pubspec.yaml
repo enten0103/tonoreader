@@ -47,4 +47,9 @@ flutter:
   uses-material-design: true
   assets:
     - assets/cover.jpg
+    - assets/pingfang.ttf
+  fonts:
+    - family: PingFang
+      fonts:
+        - asset: assets/pingfang.ttf
 
